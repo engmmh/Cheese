@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إضافة/تعديل وصفة — لوحة التحكم</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<div class="container form-page">
+  <div class="admin-header">
+    <h1 id="form-title" style="margin:0;">إضافة وصفة جديدة</h1>
+    <a href="index.html" class="btn btn-secondary btn-sm">رجوع للوحة التحكم</a>
+  </div>
+
+  <div class="alert alert-error" id="form-error" style="display:none;"></div>
+
+  <form id="recipe-form">
+    <div class="panel">
+      <h2>معلومات أساسية</h2>
+      <div class="field-group">
+        <label>اسم الوصفة</label>
+        <input type="text" id="title" required>
+      </div>
+      <div class="field-group">
+        <label>وصف مختصر</label>
+        <textarea id="short_description"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>التصنيف</label>
+          <select id="category_id"></select>
+        </div>
+        <div class="field-group">
+          <label>الكمية الناتجة / عدد الحصص</label>
+          <input type="text" id="servings">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>وقت التحضير الكلي</label>
+          <input type="text" id="total_time" placeholder="مثال: 45 دقيقة">
+        </div>
+        <div class="field-group">
+          <label>مقاس التقطيع (لو موجود)</label>
+          <input type="text" id="cutting_size" placeholder="مثال: 7×7 سم">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>رابط صورة الغلاف (اختياري)</label>
+        <input type="text" id="cover_image_url">
+      </div>
+      <div class="field-row">
+        <div class="checkbox-row">
+          <input type="checkbox" id="is_sub_recipe">
+          <label style="margin:0;">دي وصفة فرعية (تستخدم جوه وصفات تانية، مش منتج نهائي)</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="has_missing_data">
+          <label style="margin:0;">فيها بيانات ناقصة (هيظهر شعار تحذير للعميل)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>المكونات</h2>
+      <datalist id="ingredients-datalist"></datalist>
+      <div id="ingredients-rows"></div>
+      <button type="button" id="add-ingredient-btn" class="btn btn-secondary btn-sm">+ إضافة مكون</button>
+    </div>
+
+    <div class="panel">
+      <h2>خطوات التحضير</h2>
+      <div id="steps-blocks"></div>
+      <button type="button" id="add-step-btn" class="btn btn-secondary btn-sm">+ إضافة خطوة</button>
+    </div>
+
+    <div class="panel">
+      <h2>وصفات فرعية مستخدمة (اختياري)</h2>
+      <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:-6px;">مثال: كيك يستخدم صوص أو كريمة جاهزة كوصفة منفصلة.</p>
+      <div id="components-rows"></div>
+      <button type="button" id="add-component-btn" class="btn btn-secondary btn-sm">+ ربط وصفة فرعية</button>
+    </div>
+
+    <div class="panel">
+      <h2>مدة الصلاحية وظروف التخزين</h2>
+      <div class="field-row">
+        <div class="field-group">
+          <label>مدة الصلاحية (بالأيام)</label>
+          <input type="number" id="shelf_life_days">
+        </div>
+        <div class="field-group"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>حرارة الثلاجة</label>
+          <input type="text" id="fridge_temp">
+        </div>
+        <div class="field-group">
+          <label>حرارة الفريزر</label>
+          <input type="text" id="freezer_temp">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>قد يحتوي على آثار من (حسب خطوط الإنتاج المشتركة)</h2>
+      <div class="checkbox-grid" id="may-contain-grid"></div>
+      <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:10px;">
+        ملحوظة: "يحتوي على" بيتحسب تلقائيًا من المكونات، من غير ما تحتاج تدخله هنا.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h2>ملاحظات جودة عامة</h2>
+      <textarea id="general_quality_notes" rows="4"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">حفظ الوصفة</button>
+      <a href="index.html" class="btn btn-secondary">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/config.js"></script>
+<script src="auth-guard.js"></script>
+<script src="recipe-form.js"></script>
+</body>
+</html>
