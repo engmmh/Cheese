@@ -112,6 +112,7 @@ async function loadExistingRecipe(id) {
   if (!recipe) return;
 
   document.getElementById("title").value = recipe.title || "";
+  document.getElementById("title_en").value = recipe.title_en || "";
   document.getElementById("short_description").value = recipe.short_description || "";
   document.getElementById("category_id").value = recipe.category_id || "";
   document.getElementById("servings").value = recipe.servings || "";
@@ -162,6 +163,7 @@ async function saveRecipe(e) {
   try {
     const recipePayload = {
       title: document.getElementById("title").value.trim(),
+      title_en: document.getElementById("title_en").value.trim(),
       short_description: document.getElementById("short_description").value.trim(),
       category_id: document.getElementById("category_id").value || null,
       servings: document.getElementById("servings").value.trim(),

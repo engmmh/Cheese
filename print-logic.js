@@ -59,7 +59,7 @@ function stepLabel(n) {
 function renderIngredientsBlock(ingredients) {
   if (!ingredients.length) return `<p class="p-note">لا توجد مكونات مسجلة</p>`;
   return ingredients
-    .map((i) => `<p class="p-ingredient">${i.ingredients?.name || "—"} : <b>${i.amount || ""} ${i.unit || ""}</b></p>`)
+    .map((i) => `<p class="p-ingredient">${i.ingredients?.name_ar || i.ingredients?.name || "—"} : <b>${i.amount || ""} ${i.unit || ""}</b></p>`)
     .join("");
 }
 
@@ -82,6 +82,7 @@ function renderPrintPage(data) {
   document.title = "طباعة — " + recipe.title;
 
   let html = `<h1 class="p-title">${recipe.title}</h1>`;
+  if (recipe.title_en) html += `<p style="font-size:12pt; color:#666; margin:-10px 0 16px; direction:ltr;">${recipe.title_en}</p>`;
 
   html += renderIngredientsBlock(recipeIngredients);
   html += `<p class="p-method-label">طريقة التحضير:</p>`;

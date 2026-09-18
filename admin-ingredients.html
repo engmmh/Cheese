@@ -15,8 +15,23 @@
   </div>
 
   <div class="panel">
-    <form id="add-ingredient-form" style="display:flex; gap:10px;">
-      <input type="text" id="new-ingredient-name" placeholder="اسم مكون جديد">
+    <form id="add-ingredient-form" style="display:flex; gap:10px; flex-wrap:wrap;">
+      <input type="text" id="new-ingredient-name" placeholder="اسم المكون بالإنجليزي" style="flex:1; min-width:160px;">
+      <input type="text" id="new-ingredient-name-ar" placeholder="الاسم بالعربي" style="flex:1; min-width:140px;">
+      <input type="text" id="new-ingredient-icon" placeholder="إيموجي (مثال: 🧀)" style="width:120px;">
+      <select id="new-ingredient-category" style="width:180px;">
+        <option value="ألبان">ألبان</option>
+        <option value="دقيق ومخبوزات">دقيق ومخبوزات</option>
+        <option value="سكريات ومحليات">سكريات ومحليات</option>
+        <option value="بيض">بيض</option>
+        <option value="دهون وزيوت">دهون وزيوت</option>
+        <option value="فواكه">فواكه</option>
+        <option value="شوكولاتة">شوكولاتة</option>
+        <option value="مكسرات">مكسرات</option>
+        <option value="نكهات وتوابل">نكهات وتوابل</option>
+        <option value="مواد مضافة">مواد مضافة</option>
+        <option value="أخرى">أخرى</option>
+      </select>
       <button class="btn btn-primary btn-sm" type="submit">إضافة</button>
     </form>
   </div>
@@ -30,7 +45,7 @@
       <tr>
         <th>المكون</th>
         <th>مسببات الحساسية</th>
-        <th></th>
+        <th colspan="2">إجراءات</th>
       </tr>
     </thead>
     <tbody id="ingredients-tbody">

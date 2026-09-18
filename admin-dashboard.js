@@ -47,8 +47,11 @@ async function loadCategories() {
     .map(
       (c) => `
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line);">
-        <span>${c.name}</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}')">حذف</button>
+        <span>${c.name} ${c.name_en ? `<span style="color:var(--ink-soft); font-size:0.85rem;">(${c.name_en})</span>` : ""}</span>
+        <span style="display:flex; gap:6px;">
+          <button class="btn btn-secondary btn-sm" onclick="editCategory('${c.id}','${(c.name || "").replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}')">حذف</button>
+        </span>
       </div>`
     )
     .join("");
@@ -60,9 +63,17 @@ async function deleteCategory(id) {
   loadCategories();
 }
 
+async function editCategory(id, currentName) {
+  const newName = prompt("الاسم الجديد للتصنيف:", currentName);
+  if (!newName || !newName.trim()) return;
+  await supabaseClient.from("categories").update({ name: newName.trim() }).eq("id", id);
+  loadCategories();
+}
+
 document.getElementById("add-category-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const nameInput = document.getElementById("new-category-name");
+  const nameEnInput = document.getElementById("new-category-name-en");
   const name = nameInput.value.trim();
   if (!name) return;
   const slug = name
@@ -70,8 +81,9 @@ document.getElementById("add-category-form").addEventListener("submit", async (e
     .replace(/[^a-z0-9\u0600-\u06FF\s]/g, "")
     .trim()
     .replace(/\s+/g, "-") + "-" + Math.random().toString(36).slice(2, 6);
-  await supabaseClient.from("categories").insert({ name, slug });
+  await supabaseClient.from("categories").insert({ name, name_en: nameEnInput.value.trim(), slug });
   nameInput.value = "";
+  nameEnInput.value = "";
   loadCategories();
 });
 

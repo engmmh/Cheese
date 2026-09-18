@@ -83,7 +83,7 @@ function renderRecipes() {
           <div class="thumb">${thumb}</div>
           <div class="body">
             <div class="cat-label">${cat ? cat.name : ""}</div>
-            <h3>${r.title}</h3>
+            <h3>${r.title}${r.title_en ? ` <span class="title-en">${r.title_en}</span>` : ""}</h3>
             <p>${r.short_description || ""}</p>
             <div class="meta-row">
               ${r.total_time ? `<span>⏱ ${r.total_time}</span>` : ""}

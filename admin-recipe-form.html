@@ -19,9 +19,15 @@
   <form id="recipe-form">
     <div class="panel">
       <h2>معلومات أساسية</h2>
-      <div class="field-group">
-        <label>اسم الوصفة</label>
-        <input type="text" id="title" required>
+      <div class="field-row">
+        <div class="field-group">
+          <label>اسم الوصفة (عربي)</label>
+          <input type="text" id="title" required>
+        </div>
+        <div class="field-group">
+          <label>الاسم بالإنجليزي (اختياري)</label>
+          <input type="text" id="title_en">
+        </div>
       </div>
       <div class="field-group">
         <label>وصف مختصر</label>

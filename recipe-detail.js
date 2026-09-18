@@ -17,7 +17,7 @@ async function fetchFullRecipe(recipeId) {
 
   const { data: recipeIngredients } = await supabaseClient
     .from("recipe_ingredients")
-    .select("amount, unit, ingredients(id, name, name_ar)")
+    .select("amount, unit, ingredients(id, name, name_ar, icon)")
     .eq("recipe_id", recipeId);
 
   const { data: steps } = await supabaseClient
@@ -66,7 +66,7 @@ function renderRecipeDetail(data) {
     <a href="index.html">الرئيسية</a> ›
     ${category ? `<a href="index.html?cat=${category.id}">${category.name}</a> › ` : ""}
     ${recipe.title}`;
-  document.getElementById("recipe-title").textContent = recipe.title;
+  document.getElementById("recipe-title").innerHTML = recipe.title + (recipe.title_en ? `<span class="title-en-hero">${recipe.title_en}</span>` : "");
   document.getElementById("recipe-desc").textContent = recipe.short_description || "";
 
   const infoStrip = document.getElementById("info-strip");
@@ -91,7 +91,11 @@ function renderRecipeDetail(data) {
     ingList.innerHTML = `<li>لا توجد مكونات مسجلة بعد</li>`;
   } else {
     ingList.innerHTML = recipeIngredients
-      .map((ri) => `<li><span>${ri.ingredients?.name || "—"}</span><span class="amt">${ri.amount || ""} ${ri.unit || ""}</span></li>`)
+      .map((ri) => {
+        const ing = ri.ingredients;
+        const label = ing?.name_ar ? `${ing.name_ar} <span class="title-en">${ing.name}</span>` : (ing?.name || "—");
+        return `<li><span>${ing?.icon ? `<span class="ing-icon">${ing.icon}</span>` : ""}${label}</span><span class="amt">${ri.amount || ""} ${ri.unit || ""}</span></li>`;
+      })
       .join("");
   }
 
