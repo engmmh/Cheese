@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة المكونات — لوحة التحكم</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container" style="padding-top:30px; padding-bottom:60px;">
+  <div class="admin-header">
+    <h1 style="margin:0;">إدارة المكونات ومسببات الحساسية</h1>
+    <a href="admin-dashboard.html" class="btn btn-secondary btn-sm">رجوع للوحة التحكم</a>
+  </div>
+
+  <div class="panel">
+    <form id="add-ingredient-form" style="display:flex; gap:10px;">
+      <input type="text" id="new-ingredient-name" placeholder="اسم مكون جديد">
+      <button class="btn btn-primary btn-sm" type="submit">إضافة</button>
+    </form>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--ink-soft);">
+    حدد مسببات الحساسية اللي بتنطبق على كل مكون. أي وصفة تستخدم المكون ده، هتظهر مسببات الحساسية دي تلقائيًا تحتها.
+  </p>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>المكون</th>
+        <th>مسببات الحساسية</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="ingredients-tbody">
+      <tr><td colspan="3">جاري التحميل...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="admin-auth-guard.js"></script>
+<script src="admin-ingredients-logic.js"></script>
+</body>
+</html>

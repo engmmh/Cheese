@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دفتر الوصفات</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html">دفتر <span>الوصفات</span></a>
+    <div class="header-links">
+      <a href="admin-login.html">لوحة التحكم</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>كل وصفة، موثقة بالتفصيل</h1>
+    <p>المكونات، خطوات التحضير، درجات الحرارة، ومسببات الحساسية — كل حاجة محتاجها قبل ما تبدأ.</p>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="ابحث عن وصفة...">
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="categories-row" id="categories-row"></div>
+  <h2 class="section-title" id="grid-title">كل الوصفات</h2>
+  <div class="recipe-grid" id="recipe-grid">
+    <div class="empty-state">جاري التحميل...</div>
+  </div>
+</div>
+
+<footer class="site-footer">دفتر الوصفات</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

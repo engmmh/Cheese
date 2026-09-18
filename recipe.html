@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تفاصيل الوصفة — دفتر الوصفات</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="index.html">دفتر <span>الوصفات</span></a>
+    <div class="header-links">
+      <a href="admin-login.html">لوحة التحكم</a>
+    </div>
+  </div>
+</header>
+
+<div id="detail-content">
+  <section class="recipe-hero">
+    <div class="container">
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <h1 id="recipe-title"></h1>
+      <p class="desc" id="recipe-desc"></p>
+      <div class="info-strip" id="info-strip"></div>
+      <div style="margin-top:24px; display:flex; gap:10px;">
+        <a class="btn btn-secondary" id="print-link" target="_blank">🖨 طباعة الوصفة (A4)</a>
+      </div>
+      <div class="alert alert-error" id="missing-data-banner" style="display:none; margin-top:20px;">
+        ⚠ هذه الوصفة تحتوي على بيانات غير مكتملة (حرارة/زمن/كمية غير مسجلة). راجعها قبل الاعتماد النهائي.
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="detail-layout">
+      <aside>
+        <div class="panel">
+          <h2>المكونات</h2>
+          <ul class="ingredients-list" id="ingredients-list"></ul>
+        </div>
+        <div class="panel" id="sub-recipe-panel" style="display:none;">
+          <h2>يستخدم وصفات فرعية</h2>
+          <div id="sub-recipe-list"></div>
+        </div>
+        <div class="panel" id="allergen-panel"></div>
+      </aside>
+
+      <main>
+        <div class="panel">
+          <h2>خطوات التحضير</h2>
+          <div class="steps-list" id="steps-list"></div>
+        </div>
+        <div class="panel" id="general-notes-panel" style="display:none;">
+          <h2>ملاحظات جودة عامة</h2>
+          <div class="general-notes" id="general-notes-text"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">دفتر الوصفات</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="recipe-detail.js"></script>
+</body>
+</html>

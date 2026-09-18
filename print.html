@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طباعة الوصفة</title>
+<style>
+  @page { size: A4; margin: 25.4mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Calibri', 'Segoe UI', Tahoma, sans-serif; direction: rtl; background: #ddd; margin: 0; }
+  .toolbar { text-align: center; padding: 16px; }
+  .toolbar button { padding: 10px 26px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; border: none; background: #A3273D; color: #fff; cursor: pointer; }
+  #page-wrapper { width: 210mm; min-height: 297mm; background: #fff; margin: 0 auto 30px; padding: 25.4mm; border: 3px solid #000; outline: 6px solid #fff; outline-offset: -14px; }
+  #print-sheet { text-align: center; }
+  .p-title { color: #FF0000; font-weight: bold; font-style: italic; text-decoration: underline; font-size: 32pt; margin: 0 0 18px; }
+  .p-ingredient { font-size: 12pt; margin: 6px 0; }
+  .p-method-label { color: #FF0000; text-decoration: underline; font-size: 15pt; margin: 18px 0 10px; }
+  .p-step { font-size: 11pt; margin: 0 0 8px; line-height: 1.5; }
+  .p-step-label { color: #FF0000; font-weight: 600; }
+  .p-sub-title { color: #FF0000; font-weight: bold; font-size: 15pt; margin: 26px 0 10px; }
+  .p-final-note { color: #00B050; font-weight: bold; font-size: 12pt; margin-top: 24px; }
+  .p-note { color: #888; font-size: 11pt; }
+  @media print {
+    .toolbar { display: none; }
+    body { background: #fff; }
+    #page-wrapper { border: none; outline: none; margin: 0; width: auto; min-height: auto; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="window.print()">🖨 طباعة / حفظ كـ PDF</button>
+</div>
+
+<div id="page-wrapper">
+  <div id="print-sheet">جاري التحميل...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="print-logic.js"></script>
+</body>
+</html>
