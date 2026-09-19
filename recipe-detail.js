@@ -17,7 +17,7 @@ async function fetchFullRecipe(recipeId) {
 
   const { data: recipeIngredients } = await supabaseClient
     .from("recipe_ingredients")
-    .select("amount, unit, ingredients(id, name, name_ar, icon)")
+    .select("amount, unit, ingredients(id, name, name_ar, icon, unit_cost, cost_unit)")
     .eq("recipe_id", recipeId);
 
   const { data: steps } = await supabaseClient
@@ -64,8 +64,13 @@ async function fetchFullRecipe(recipeId) {
   };
 }
 
+let currentRecipeIngredients = [];
+let currentRecipeSteps = [];
+
 function renderRecipeDetail(data) {
   const { recipe, category, recipeIngredients, steps, components, usedInParents, mayContain, containsAllergens } = data;
+  currentRecipeIngredients = recipeIngredients;
+  currentRecipeSteps = steps;
 
   document.title = recipe.title + " — دفتر الوصفات";
   document.getElementById("breadcrumb").innerHTML = `
@@ -106,7 +111,7 @@ function renderRecipeDetail(data) {
       .map((ri) => {
         const ing = ri.ingredients;
         const label = ing?.name_ar ? `${ing.name_ar} <span class="title-en">${ing.name}</span>` : (ing?.name || "—"); // already bilingual
-        return `<li><span>${ing?.icon ? `<span class="ing-icon">${ing.icon}</span>` : ""}${label}</span><span class="amt">${ri.amount || ""} ${ri.unit || ""}</span></li>`;
+        return `<li><span>${ing?.icon ? `<span class="ing-icon">${ing.icon}</span>` : ""}${label}</span><span class="amt" data-amount="${ri.amount || ""}" data-unit="${ri.unit || ""}">${ri.amount || ""} ${ri.unit || ""}</span></li>`;
       })
       .join("");
   }
@@ -189,6 +194,102 @@ function renderRecipeDetail(data) {
   }
 
   document.getElementById("print-link").href = `print.html?id=${recipe.id}`;
+
+  renderCost(recipeIngredients);
+  renderQRCode();
+}
+
+function renderCost(recipeIngredients) {
+  const panel = document.getElementById("cost-panel");
+  let total = 0;
+  let hasAnyCost = false;
+  recipeIngredients.forEach((ri) => {
+    const ing = ri.ingredients;
+    if (!ing || ing.unit_cost == null || !ri.amount) return;
+    let amountInCostUnit = parseFloat(ri.amount);
+    const unit = (ri.unit || "").toLowerCase().trim();
+    const costUnit = (ing.cost_unit || "g").toLowerCase().trim();
+    // تحويل بسيط بين g/kg و ml/l لو الوحدتين متوافقتين
+    if (unit === costUnit) {
+      // نفس الوحدة، لا تحويل
+    } else if (unit === "kg" && costUnit === "g") amountInCostUnit *= 1000;
+    else if (unit === "g" && costUnit === "kg") amountInCostUnit /= 1000;
+    else if (unit === "l" && costUnit === "ml") amountInCostUnit *= 1000;
+    else if (unit === "ml" && costUnit === "l") amountInCostUnit /= 1000;
+    else if (unit !== "" && costUnit !== "") return; // وحدات غير متوافقة، تجاهل هذا المكون من الحساب
+    total += amountInCostUnit * parseFloat(ing.unit_cost);
+    hasAnyCost = true;
+  });
+  if (!hasAnyCost) return;
+  panel.style.display = "block";
+  document.getElementById("cost-value").innerHTML = `
+    <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--accent);">${total.toFixed(2)} <span style="font-size:0.9rem; color:var(--ink-soft);">جنيه تقريبًا</span></div>
+    <p style="font-size:0.78rem; color:var(--ink-soft); margin-top:8px;">تقدير تقريبي بناءً على أسعار المكونات المسجلة في لوحة التحكم، وقد لا يشمل كل المكونات.<br><span class="label-en">Rough estimate based on recorded ingredient prices; may not cover every ingredient.</span></p>
+  `;
+}
+
+function renderQRCode() {
+  const wrap = document.getElementById("qr-code-wrap");
+  if (!wrap || typeof QRCode === "undefined") return;
+  const canvas = document.createElement("canvas");
+  wrap.innerHTML = "";
+  wrap.appendChild(canvas);
+  QRCode.toCanvas(canvas, window.location.href, { width: 160, margin: 1 }, (err) => {
+    if (err) wrap.innerHTML = "";
+  });
+  const p = document.createElement("p");
+  p.style.cssText = "font-size:0.78rem; color:var(--ink-soft); margin-top:8px;";
+  p.innerHTML = "امسح الكود عشان توصل للوصفة فورًا<br><span class=\"label-en\">Scan for instant access</span>";
+  wrap.appendChild(p);
+}
+
+function setupScaling() {
+  const input = document.getElementById("scale-input");
+  if (!input) return;
+  input.addEventListener("input", () => {
+    const factor = parseFloat(input.value) || 1;
+    document.querySelectorAll("#ingredients-list .amt").forEach((el) => {
+      const original = parseFloat(el.dataset.amount);
+      const unit = el.dataset.unit || "";
+      if (isNaN(original)) return;
+      const scaled = (original * factor);
+      const displayVal = Number.isInteger(scaled) ? scaled : scaled.toFixed(2);
+      el.textContent = `${displayVal} ${unit}`;
+    });
+  });
+}
+
+function setupKitchenMode() {
+  const btn = document.getElementById("kitchen-mode-btn");
+  const overlay = document.getElementById("kitchen-mode-overlay");
+  const closeBtn = document.getElementById("kitchen-close-btn");
+  if (!btn || !overlay) return;
+
+  btn.addEventListener("click", () => {
+    document.getElementById("kitchen-title").textContent = document.getElementById("recipe-title").textContent;
+    document.getElementById("kitchen-steps").innerHTML = currentRecipeSteps
+      .map((s) => {
+        const specs = [];
+        if (s.temperature) specs.push(`🌡 ${s.temperature}`);
+        if (s.duration) specs.push(`⏱ ${s.duration}`);
+        if (s.mixing_method) specs.push(`🥄 ${s.mixing_method}`);
+        return `
+          <div class="kitchen-step">
+            <div class="k-num">${s.step_number}. ${s.title || ""}</div>
+            <div>${s.instructions || ""}</div>
+            ${specs.length ? `<div class="k-specs">${specs.join(" &nbsp;•&nbsp; ")}</div>` : ""}
+            ${s.quality_note ? `<div class="k-specs" style="color:var(--success-ink);">✓ ${s.quality_note}</div>` : ""}
+          </div>`;
+      })
+      .join("");
+    overlay.style.display = "block";
+    document.body.style.overflow = "hidden";
+  });
+
+  closeBtn.addEventListener("click", () => {
+    overlay.style.display = "none";
+    document.body.style.overflow = "";
+  });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -203,4 +304,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
   renderRecipeDetail(data);
+  setupScaling();
+  setupKitchenMode();
 });

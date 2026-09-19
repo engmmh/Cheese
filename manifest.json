@@ -1,0 +1,13 @@
+{
+  "name": "دفتر الوصفات - Recipe Book",
+  "short_name": "دفتر الوصفات",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FAF3E4",
+  "theme_color": "#2B1B14",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

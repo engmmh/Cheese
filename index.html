@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="theme-toggle.js"></script>
 <title>دفتر الوصفات</title>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2B1B14">
 </head>
 <body>
 
@@ -27,6 +30,18 @@
   </div>
 </section>
 
+<div class="container" id="featured-section" style="display:none;">
+  <h2 class="section-title">⭐ منتجات مميزة<span class="label-en">Featured</span></h2>
+  <div class="recipe-grid" id="featured-grid"></div>
+</div>
+
+<div class="container">
+  <details class="allergen-filter-box">
+    <summary>🔎 فلترة حسب مسببات الحساسية <span class="label-en">Filter by allergens</span></summary>
+    <div class="checkbox-grid" id="allergen-filter-grid" style="margin-top:14px;"></div>
+  </details>
+</div>
+
 <div class="container">
   <div class="type-toggle" id="type-toggle">
     <button class="type-btn active" data-type="all">🍽 كل المنتجات<span class="label-en">All</span></button>
@@ -36,7 +51,9 @@
   <div class="categories-row" id="categories-row"></div>
   <h2 class="section-title" id="grid-title">كل الوصفات</h2>
   <div class="recipe-grid" id="recipe-grid">
-    <div class="empty-state">جاري التحميل...</div>
+    <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+    <div class="skeleton-card"><div class="skel-thumb"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
   </div>
 </div>
 
@@ -45,5 +62,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="main.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+</script>
 </body>
 </html>

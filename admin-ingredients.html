@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="theme-toggle.js"></script>
 <title>إدارة المكونات — لوحة التحكم</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -18,7 +19,7 @@
     <form id="add-ingredient-form" style="display:flex; gap:10px; flex-wrap:wrap;">
       <input type="text" id="new-ingredient-name" placeholder="اسم المكون بالإنجليزي / English name" style="flex:1; min-width:160px;">
       <input type="text" id="new-ingredient-name-ar" placeholder="الاسم بالعربي / Arabic name" style="flex:1; min-width:140px;">
-      <input type="text" id="new-ingredient-icon" placeholder="إيموجي / Icon" style="width:120px;">
+      <input type="text" id="new-ingredient-icon" placeholder="إيموجي / Icon" style="width:110px;">
       <select id="new-ingredient-category" style="width:180px;">
         <option value="ألبان">ألبان / Dairy</option>
         <option value="دقيق ومخبوزات">دقيق ومخبوزات / Flour &amp; Bakery</option>
@@ -31,6 +32,14 @@
         <option value="نكهات وتوابل">نكهات وتوابل / Flavorings</option>
         <option value="مواد مضافة">مواد مضافة / Additives</option>
         <option value="أخرى">أخرى / Other</option>
+      </select>
+      <input type="number" step="any" id="new-ingredient-cost" placeholder="السعر / Price" style="width:100px;">
+      <select id="new-ingredient-cost-unit" style="width:90px;">
+        <option value="g">لكل جرام g</option>
+        <option value="kg">لكل كيلو kg</option>
+        <option value="ml">لكل مل ml</option>
+        <option value="l">لكل لتر l</option>
+        <option value="pcs">لكل قطعة pcs</option>
       </select>
       <button class="btn btn-primary btn-sm" type="submit">إضافة<span class="label-en">Add</span></button>
     </form>
@@ -45,6 +54,7 @@
     <thead>
       <tr>
         <th>المكون<span class="label-en">Ingredient</span></th>
+        <th>💰 السعر<span class="label-en">Price</span></th>
         <th>مسببات الحساسية<span class="label-en">Allergens</span></th>
         <th colspan="2">إجراءات<span class="label-en">Actions</span></th>
       </tr>

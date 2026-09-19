@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="theme-toggle.js"></script>
+<title>سجل التغييرات — لوحة التحكم</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container" style="padding-top:30px; padding-bottom:60px;">
+  <div class="admin-header">
+    <h1 style="margin:0;">🕒 سجل التغييرات<span class="label-en">Version History</span></h1>
+    <a href="admin-dashboard.html" class="btn btn-secondary btn-sm">رجوع للوحة التحكم<span class="label-en">Back</span></a>
+  </div>
+
+  <p style="font-size:0.85rem; color:var(--ink-soft);">
+    كل مرة تعدّل فيها وصفة، بتتحفظ نسخة من حالتها قبل التعديل هنا، تقدر ترجعلها وقت ما تحب.
+    <br><span class="label-en">Every edit saves a snapshot of the recipe before the change, so you can restore it anytime.</span>
+  </p>
+
+  <div id="history-list"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+function getIdParam() { return new URLSearchParams(window.location.search).get("id"); }
+
+async function loadHistory() {
+  const session = await requireAdmin();
+  if (!session) return;
+
+  const recipeId = getIdParam();
+  if (!recipeId) {
+    document.getElementById("history-list").innerHTML = "لم يتم تحديد وصفة";
+    return;
+  }
+
+  const { data: versions } = await supabaseClient
+    .from("recipe_versions")
+    .select("*")
+    .eq("recipe_id", recipeId)
+    .order("created_at", { ascending: false });
+
+  const list = document.getElementById("history-list");
+  if (!versions || versions.length === 0) {
+    list.innerHTML = `<div class="empty-state">لا يوجد سجل تعديلات بعد لهذه الوصفة<span class="label-en"><br>No edit history yet</span></div>`;
+    return;
+  }
+
+  list.innerHTML = versions
+    .map((v) => {
+      const date = new Date(v.created_at).toLocaleString("ar-EG");
+      const title = v.snapshot?.recipe?.title || "—";
+      return `
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>${title}</strong>
+              <div style="font-size:0.82rem; color:var(--ink-soft); margin-top:4px;">${date} ${v.edited_by ? "— " + v.edited_by : ""}</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick='restoreVersion(${JSON.stringify(v.snapshot).replace(/'/g, "&apos;")})'>↺ استرجاع هذه النسخة<span class="label-en">Restore</span></button>
+          </div>
+        </div>`;
+    })
+    .join("");
+}
+
+async function restoreVersion(snapshot) {
+  if (!confirm("هيتم استرجاع بيانات الوصفة الأساسية لهذه النسخة (الاسم، الوصف، الملاحظات...). المكونات والخطوات التفصيلية محتاجة مراجعة يدوية بعد الاسترجاع. تكمل؟")) return;
+  const r = snapshot.recipe;
+  if (!r) return;
+  const { id, created_at, ...updateFields } = r;
+  await supabaseClient.from("recipes").update(updateFields).eq("id", id);
+  alert("تم استرجاع البيانات الأساسية. افتح فورم التعديل للمراجعة الكاملة.");
+  window.location.href = `admin-recipe-form.html?id=${id}`;
+}
+
+loadHistory();
+</script>
+</body>
+</html>

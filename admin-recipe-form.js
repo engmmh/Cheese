@@ -7,6 +7,7 @@ let masterIngredients = [];
 let allAllergensList = [];
 let allRecipesForComponents = [];
 let finalProductRecipes = [];
+let session_email_cache = "";
 
 // ---------- رفع صورة المنتج ----------
 async function uploadCoverImage(file) {
@@ -171,6 +172,7 @@ async function loadExistingRecipe(id) {
   showExistingCoverPreview(recipe.cover_image_url);
   document.getElementById("is_sub_recipe").checked = !!recipe.is_sub_recipe;
   document.getElementById("has_missing_data").checked = !!recipe.has_missing_data;
+  document.getElementById("is_featured").checked = !!recipe.is_featured;
   document.getElementById("sub_recipe_type").value = recipe.sub_recipe_type || "";
   document.getElementById("sub-type-wrap").style.display = recipe.is_sub_recipe ? "block" : "none";
 
@@ -227,11 +229,22 @@ async function saveRecipe(e) {
       cover_image_url: document.getElementById("cover_image_url").value.trim(),
       is_sub_recipe: document.getElementById("is_sub_recipe").checked,
       has_missing_data: document.getElementById("has_missing_data").checked,
+      is_featured: document.getElementById("is_featured").checked,
       sub_recipe_type: document.getElementById("is_sub_recipe").checked ? (document.getElementById("sub_recipe_type").value || null) : null,
     };
 
     let recipeId = editingRecipeId;
     if (recipeId) {
+      // حفظ نسخة من الوصفة الحالية قبل التعديل (سجل التغييرات)
+      const { data: oldRecipe } = await supabaseClient.from("recipes").select("*").eq("id", recipeId).single();
+      const { data: oldIngredients } = await supabaseClient.from("recipe_ingredients").select("*").eq("recipe_id", recipeId);
+      const { data: oldSteps } = await supabaseClient.from("recipe_steps").select("*").eq("recipe_id", recipeId);
+      await supabaseClient.from("recipe_versions").insert({
+        recipe_id: recipeId,
+        snapshot: { recipe: oldRecipe, ingredients: oldIngredients, steps: oldSteps },
+        edited_by: session_email_cache,
+      });
+
       const { error } = await supabaseClient.from("recipes").update(recipePayload).eq("id", recipeId);
       if (error) throw error;
       // امسح البيانات المرتبطة القديمة عشان نعيد كتابتها من الفورم
@@ -319,9 +332,13 @@ async function saveRecipe(e) {
 document.addEventListener("DOMContentLoaded", async () => {
   const session = await requireAdmin();
   if (!session) return;
+  session_email_cache = session.user.email;
 
   editingRecipeId = getIdParam();
   document.getElementById("form-title").textContent = editingRecipeId ? "تعديل الوصفة" : "إضافة وصفة جديدة";
+  if (editingRecipeId) {
+    document.getElementById("form-title").innerHTML += ` <a href="admin-history.html?id=${editingRecipeId}" class="btn btn-secondary btn-sm" style="font-size:0.8rem; vertical-align:middle;">🕒 سجل التغييرات</a>`;
+  }
 
   await loadFormPrereqs();
 

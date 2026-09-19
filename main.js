@@ -6,6 +6,8 @@ let allCategories = [];
 let allRecipes = [];
 let activeCategoryId = null;
 let activeType = "all";
+let recipeAllergenMap = {}; // recipe_id -> Set(allergen_id)
+let excludedAllergens = new Set();
 
 async function loadHomeData() {
   const { data: categories, error: catErr } = await supabaseClient
@@ -30,6 +32,67 @@ async function loadHomeData() {
 
   renderCategoryChips();
   renderRecipes();
+  renderFeatured();
+  loadAllergenFilter();
+}
+
+async function renderFeatured() {
+  const featured = allRecipes.filter((r) => r.is_featured);
+  if (featured.length === 0) return;
+  document.getElementById("featured-section").style.display = "block";
+  document.getElementById("featured-grid").innerHTML = featured.map(cardHtmlGlobal).join("");
+}
+
+function cardHtmlGlobal(r) {
+  const cat = allCategories.find((c) => c.id === r.category_id);
+  const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
+  const thumb = r.cover_image_url
+    ? `<img src="${r.cover_image_url}" alt="${r.title}">`
+    : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
+  const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة<span class="label-en">Missing data</span></span>` : "";
+  return `
+    <a class="recipe-card" href="recipe.html?id=${r.id}">
+      <div class="thumb">${thumb}</div>
+      <div class="body">
+        <div class="cat-label">${cat ? cat.name : ""}</div>
+        <h3>${r.title}${r.title_en ? ` <span class="title-en">${r.title_en}</span>` : ""}</h3>
+        <p>${r.short_description || ""}</p>
+        <div class="meta-row">
+          ${r.total_time ? `<span>⏱ ${r.total_time}</span>` : ""}
+          ${missingBadge}
+        </div>
+      </div>
+    </a>`;
+}
+
+async function loadAllergenFilter() {
+  const { data: allergens } = await supabaseClient.from("allergens").select("*").order("name");
+  const grid = document.getElementById("allergen-filter-grid");
+  grid.innerHTML = (allergens || [])
+    .map((a) => `<label><input type="checkbox" value="${a.id}" class="allergen-filter-cb"> ${a.icon || ""} ${a.name_ar || a.name}</label>`)
+    .join("");
+
+  // بناء خريطة: كل وصفة -> مجموعة مسببات الحساسية اللي فيها (من المكونات)
+  const { data: recIngs } = await supabaseClient.from("recipe_ingredients").select("recipe_id, ingredient_id");
+  const { data: ingAllergens } = await supabaseClient.from("ingredient_allergens").select("ingredient_id, allergen_id");
+  const ingToAllergens = {};
+  (ingAllergens || []).forEach((ia) => {
+    if (!ingToAllergens[ia.ingredient_id]) ingToAllergens[ia.ingredient_id] = new Set();
+    ingToAllergens[ia.ingredient_id].add(ia.allergen_id);
+  });
+  (recIngs || []).forEach((ri) => {
+    if (!recipeAllergenMap[ri.recipe_id]) recipeAllergenMap[ri.recipe_id] = new Set();
+    const set = ingToAllergens[ri.ingredient_id];
+    if (set) set.forEach((a) => recipeAllergenMap[ri.recipe_id].add(a));
+  });
+
+  grid.querySelectorAll(".allergen-filter-cb").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      if (cb.checked) excludedAllergens.add(cb.value);
+      else excludedAllergens.delete(cb.value);
+      renderRecipes();
+    });
+  });
 }
 
 function renderCategoryChips() {
@@ -61,6 +124,14 @@ function renderRecipes() {
   if (activeType === "sub") list = list.filter((r) => r.is_sub_recipe);
   if (activeCategoryId) list = list.filter((r) => r.category_id === activeCategoryId);
   if (searchTerm) list = list.filter((r) => (r.title || "").toLowerCase().includes(searchTerm) || (r.title_en || "").toLowerCase().includes(searchTerm));
+  if (excludedAllergens.size > 0) {
+    list = list.filter((r) => {
+      const set = recipeAllergenMap[r.id];
+      if (!set) return true;
+      for (const a of excludedAllergens) if (set.has(a)) return false;
+      return true;
+    });
+  }
 
   const titleEl = document.getElementById("grid-title");
   const cat = allCategories.find((c) => c.id === activeCategoryId);

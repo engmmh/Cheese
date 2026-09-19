@@ -41,6 +41,7 @@ async function loadIngredientsPage() {
     html += `
       <tr>
         <td>${ing.icon || ""} ${ing.name_ar || ""} <span style="color:var(--ink-soft); font-size:0.82rem;">${ing.name}</span></td>
+        <td>${ing.unit_cost != null ? `${ing.unit_cost} / ${ing.cost_unit || "g"}` : "—"}</td>
         <td>${checkboxes}</td>
         <td><button class="btn btn-secondary btn-sm" onclick="editIngredient('${ing.id}')">تعديل / Edit</button>
         <button class="btn btn-danger btn-sm" onclick="deleteIngredient('${ing.id}')">حذف / Delete</button></td>
@@ -70,7 +71,13 @@ async function editIngredient(id) {
   if (nameAr === null) return;
   const icon = prompt("إيموجي:");
   const category = prompt("التصنيف (مثال: ألبان، دقيق ومخبوزات، سكريات ومحليات...):");
-  await supabaseClient.from("ingredients").update({ name_ar: nameAr, icon, ingredient_category: category }).eq("id", id);
+  const unitCost = prompt("السعر لكل وحدة (رقم فقط، سيب فاضي لو مش عارف):");
+  const costUnit = prompt("الوحدة (g / kg / ml / l / pcs):", "g");
+  await supabaseClient.from("ingredients").update({
+    name_ar: nameAr, icon, ingredient_category: category,
+    unit_cost: unitCost ? parseFloat(unitCost) : null,
+    cost_unit: costUnit || "g",
+  }).eq("id", id);
   loadIngredientsPage();
 }
 
@@ -82,10 +89,17 @@ document.getElementById("add-ingredient-form").addEventListener("submit", async 
   const nameAr = document.getElementById("new-ingredient-name-ar").value.trim();
   const icon = document.getElementById("new-ingredient-icon").value.trim();
   const category = document.getElementById("new-ingredient-category").value;
-  await supabaseClient.from("ingredients").insert({ name, name_ar: nameAr, icon, ingredient_category: category });
+  const costVal = document.getElementById("new-ingredient-cost").value;
+  const costUnit = document.getElementById("new-ingredient-cost-unit").value;
+  await supabaseClient.from("ingredients").insert({
+    name, name_ar: nameAr, icon, ingredient_category: category,
+    unit_cost: costVal ? parseFloat(costVal) : null,
+    cost_unit: costUnit,
+  });
   input.value = "";
   document.getElementById("new-ingredient-name-ar").value = "";
   document.getElementById("new-ingredient-icon").value = "";
+  document.getElementById("new-ingredient-cost").value = "";
   loadIngredientsPage();
 });
 

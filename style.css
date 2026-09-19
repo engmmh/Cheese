@@ -28,6 +28,68 @@
   --shadow-card: 0 1px 2px rgba(43, 27, 20, 0.06);
 }
 
+:root[data-theme="dark"] {
+  --bg: #1C1512;
+  --surface: #251C18;
+  --ink: #F2E9DD;
+  --ink-soft: #B8A99A;
+  --accent: #E0566F;
+  --accent-dark: #F3899C;
+  --accent-soft: #3A2229;
+  --caramel: #E0A857;
+  --line: #3A2E27;
+  --success-bg: #22301C;
+  --success-ink: #A8CC8A;
+  --warn-bg: #3A2E17;
+  --warn-ink: #E8B96A;
+}
+
+/* ---------- Theme toggle button ---------- */
+.theme-toggle-btn {
+  background: none;
+  border: 1.5px solid rgba(245,237,225,0.3);
+  border-radius: 999px;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+}
+.theme-toggle-btn:hover { border-color: rgba(245,237,225,0.7); }
+
+/* ---------- Skeleton loading ---------- */
+@keyframes skeleton-pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.skeleton-card .skel-thumb { aspect-ratio: 4/3; background: var(--line); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+.skeleton-card .skel-line { height: 12px; background: var(--line); border-radius: 4px; margin: 14px 16px; animation: skeleton-pulse 1.4s ease-in-out infinite; }
+.skeleton-card .skel-line.short { width: 50%; }
+
+/* ---------- Card fade-in animation ---------- */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.recipe-card { animation: fade-in-up 0.4s ease both; }
+.recipe-grid .recipe-card:nth-child(1) { animation-delay: 0.02s; }
+.recipe-grid .recipe-card:nth-child(2) { animation-delay: 0.06s; }
+.recipe-grid .recipe-card:nth-child(3) { animation-delay: 0.10s; }
+.recipe-grid .recipe-card:nth-child(4) { animation-delay: 0.14s; }
+.recipe-grid .recipe-card:nth-child(5) { animation-delay: 0.18s; }
+.recipe-grid .recipe-card:nth-child(6) { animation-delay: 0.22s; }
+
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -39,6 +101,7 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   direction: rtl;
+  transition: background 0.2s, color 0.2s;
 }
 
 img { max-width: 100%; display: block; }
@@ -160,7 +223,22 @@ a { color: inherit; text-decoration: none; }
 }
 .subtype-heading:first-child { margin-top: 0; }
 
-/* ---------- Category chips ---------- */
+.allergen-filter-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: 14px 20px;
+  margin: 8px 0 20px;
+}
+.allergen-filter-box summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.allergen-filter-box .checkbox-grid label {
+  font-weight: 500;
+  font-size: 0.88rem;
+}
 .categories-row {
   display: flex;
   flex-wrap: wrap;
@@ -485,7 +563,73 @@ a { color: inherit; text-decoration: none; }
 .general-notes { font-size: 0.95rem; }
 .general-notes p { margin: 0 0 10px; }
 
-/* ---------- Buttons ---------- */
+.scale-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+}
+.scale-control input {
+  border: none;
+  padding: 2px;
+  text-align: center;
+  background: transparent;
+}
+
+.kitchen-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 999;
+  overflow-y: auto;
+}
+.kitchen-header {
+  position: sticky;
+  top: 0;
+  background: var(--ink);
+  color: #F5EDE1;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+.kitchen-header button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.kitchen-steps { max-width: 760px; margin: 0 auto; padding: 40px 24px 100px; }
+.kitchen-step {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  font-size: 1.3rem;
+  line-height: 1.7;
+}
+.kitchen-step .k-num {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.kitchen-step .k-specs {
+  margin-top: 14px;
+  font-size: 1.1rem;
+  color: var(--accent-dark);
+  font-weight: 600;
+}
 .btn {
   display: inline-flex;
   align-items: center;

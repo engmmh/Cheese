@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="theme-toggle.js"></script>
 <title>تفاصيل الوصفة — دفتر الوصفات</title>
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2B1B14">
 </head>
 <body>
 
@@ -26,8 +29,14 @@
       <h1 id="recipe-title"></h1>
       <p class="desc" id="recipe-desc"></p>
       <div class="info-strip" id="info-strip"></div>
-      <div style="margin-top:24px; display:flex; gap:10px;">
+      <div style="margin-top:24px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <a class="btn btn-secondary" id="print-link" target="_blank">🖨 طباعة الوصفة (A4)<span class="label-en">Print (A4)</span></a>
+        <button class="btn btn-secondary" id="kitchen-mode-btn">👨‍🍳 وضع المطبخ<span class="label-en">Kitchen Mode</span></button>
+        <div class="scale-control">
+          <label style="margin:0; font-size:0.85rem;">تحجيم الكمية<span class="label-en">Scale</span></label>
+          <input type="number" id="scale-input" value="1" min="0.1" step="0.1" style="width:70px;">
+          <span style="font-size:0.85rem; color:var(--ink-soft);">×</span>
+        </div>
       </div>
       <div class="alert alert-error" id="missing-data-banner" style="display:none; margin-top:20px;">
         ⚠ هذه الوصفة تحتوي على بيانات غير مكتملة (حرارة/زمن/كمية غير مسجلة). راجعها قبل الاعتماد النهائي.<br><span class="label-en">This recipe has incomplete data. Review before final approval.</span>
@@ -51,6 +60,14 @@
           <div id="used-in-list"></div>
         </div>
         <div class="panel" id="allergen-panel"></div>
+        <div class="panel" id="cost-panel" style="display:none;">
+          <h2>💰 التكلفة التقديرية<span class="label-en">Estimated Cost</span></h2>
+          <div id="cost-value"></div>
+        </div>
+        <div class="panel" style="text-align:center;">
+          <h2>📱 QR<span class="label-en">Quick access</span></h2>
+          <div id="qr-code-wrap"></div>
+        </div>
       </aside>
 
       <main>
@@ -67,9 +84,18 @@
   </div>
 </div>
 
+<div id="kitchen-mode-overlay" class="kitchen-overlay" style="display:none;">
+  <div class="kitchen-header">
+    <span id="kitchen-title"></span>
+    <button id="kitchen-close-btn">✕ إغلاق <span class="label-en">Close</span></button>
+  </div>
+  <div id="kitchen-steps" class="kitchen-steps"></div>
+</div>
+
 <footer class="site-footer">دفتر الوصفات<span class="label-en">Recipe Book</span></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="config.js"></script>
 <script src="recipe-detail.js"></script>
 </body>
