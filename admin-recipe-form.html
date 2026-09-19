@@ -18,7 +18,7 @@
 
   <form id="recipe-form">
     <div class="panel">
-      <h2>معلومات أساسية</h2>
+      <h2>ℹ️ معلومات أساسية</h2>
       <div class="field-row">
         <div class="field-group">
           <label>اسم الوصفة (عربي)</label>
@@ -72,27 +72,34 @@
     </div>
 
     <div class="panel">
-      <h2>المكونات</h2>
+      <h2>🧾 المكونات</h2>
       <datalist id="ingredients-datalist"></datalist>
       <div id="ingredients-rows"></div>
       <button type="button" id="add-ingredient-btn" class="btn btn-secondary btn-sm">+ إضافة مكون</button>
     </div>
 
     <div class="panel">
-      <h2>خطوات التحضير</h2>
+      <h2>🔥 خطوات التحضير</h2>
       <div id="steps-blocks"></div>
       <button type="button" id="add-step-btn" class="btn btn-secondary btn-sm">+ إضافة خطوة</button>
     </div>
 
     <div class="panel">
-      <h2>وصفات فرعية مستخدمة (اختياري)</h2>
+      <h2>🔗 استخدام هذه الوصفة داخل منتج نهائي آخر</h2>
+      <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:-6px;">مثال: أنت الآن جوه "خليط كيك الليمون" وعايز تربطها بمنتج "كيك الليمون" النهائي مباشرة من هنا.</p>
+      <div id="used-in-rows"></div>
+      <button type="button" id="add-used-in-btn" class="btn btn-secondary btn-sm">+ ربط بمنتج نهائي</button>
+    </div>
+
+    <div class="panel">
+      <h2>🧩 وصفات فرعية مستخدمة داخل هذه الوصفة (اختياري)</h2>
       <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:-6px;">مثال: كيك يستخدم صوص أو كريمة جاهزة كوصفة منفصلة.</p>
       <div id="components-rows"></div>
       <button type="button" id="add-component-btn" class="btn btn-secondary btn-sm">+ ربط وصفة فرعية</button>
     </div>
 
     <div class="panel">
-      <h2>مدة الصلاحية وظروف التخزين</h2>
+      <h2>📦 مدة الصلاحية وظروف التخزين</h2>
       <div class="field-row">
         <div class="field-group">
           <label>مدة الصلاحية (بالأيام)</label>
@@ -113,7 +120,7 @@
     </div>
 
     <div class="panel">
-      <h2>قد يحتوي على آثار من (حسب خطوط الإنتاج المشتركة)</h2>
+      <h2>⚠️ قد يحتوي على آثار من (حسب خطوط الإنتاج المشتركة)</h2>
       <div class="checkbox-grid" id="may-contain-grid"></div>
       <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:10px;">
         ملحوظة: "يحتوي على" بيتحسب تلقائيًا من المكونات، من غير ما تحتاج تدخله هنا.
@@ -121,7 +128,7 @@
     </div>
 
     <div class="panel">
-      <h2>ملاحظات جودة عامة</h2>
+      <h2>📝 ملاحظات جودة عامة</h2>
       <textarea id="general_quality_notes" rows="4"></textarea>
     </div>
 

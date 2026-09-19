@@ -6,6 +6,7 @@ let editingRecipeId = null;
 let masterIngredients = [];
 let allAllergensList = [];
 let allRecipesForComponents = [];
+let finalProductRecipes = [];
 
 // ---------- رفع صورة المنتج ----------
 async function uploadCoverImage(file) {
@@ -55,8 +56,9 @@ async function loadFormPrereqs() {
     .map((a) => `<label><input type="checkbox" value="${a.id}" class="may-contain-cb"> ${a.icon || ""} ${a.name_ar || a.name}</label>`)
     .join("");
 
-  const { data: recipes } = await supabaseClient.from("recipes").select("id, title");
+  const { data: recipes } = await supabaseClient.from("recipes").select("id, title, is_sub_recipe");
   allRecipesForComponents = recipes || [];
+  finalProductRecipes = (recipes || []).filter((r) => !r.is_sub_recipe);
 }
 
 // ---------- صفوف المكونات ----------
@@ -113,6 +115,24 @@ function addStepBlock(values = {}) {
   container.appendChild(block);
 }
 
+// ---------- صفوف "تُستخدم داخل منتج نهائي" (ربط عكسي) ----------
+function addUsedInRow(values = {}) {
+  const container = document.getElementById("used-in-rows");
+  const row = document.createElement("div");
+  row.className = "repeat-row used-in-row";
+  const options = finalProductRecipes
+    .filter((r) => r.id !== editingRecipeId)
+    .map((r) => `<option value="${r.id}" ${values.parent_recipe_id === r.id ? "selected" : ""}>${r.title}</option>`)
+    .join("");
+  row.innerHTML = `
+    <div><select class="used-in-parent"><option value="">اختر المنتج النهائي</option>${options}</select></div>
+    <div><input type="number" step="any" class="used-in-amount" placeholder="الكمية" value="${values.amount || ""}"></div>
+    <div><input type="text" class="used-in-unit" placeholder="الوحدة" value="${values.unit || ""}"></div>
+    <button type="button" class="remove-btn" onclick="this.closest('.used-in-row').remove()">✕</button>
+  `;
+  container.appendChild(row);
+}
+
 // ---------- صفوف الوصفات الفرعية ----------
 function addComponentRow(values = {}) {
   const container = document.getElementById("components-rows");
@@ -164,6 +184,9 @@ async function loadExistingRecipe(id) {
   const { data: comps } = await supabaseClient.from("recipe_components").select("*").eq("parent_recipe_id", id);
   (comps || []).forEach((c) => addComponentRow(c));
 
+  const { data: usedIn } = await supabaseClient.from("recipe_components").select("*").eq("component_recipe_id", id);
+  (usedIn || []).forEach((u) => addUsedInRow({ parent_recipe_id: u.parent_recipe_id, amount: u.amount, unit: u.unit }));
+
   const { data: mc } = await supabaseClient.from("recipe_may_contain").select("allergen_id").eq("recipe_id", id);
   const mcIds = new Set((mc || []).map((m) => m.allergen_id));
   document.querySelectorAll(".may-contain-cb").forEach((cb) => {
@@ -212,6 +235,7 @@ async function saveRecipe(e) {
       await supabaseClient.from("recipe_ingredients").delete().eq("recipe_id", recipeId);
       await supabaseClient.from("recipe_steps").delete().eq("recipe_id", recipeId);
       await supabaseClient.from("recipe_components").delete().eq("parent_recipe_id", recipeId);
+      await supabaseClient.from("recipe_components").delete().eq("component_recipe_id", recipeId);
       await supabaseClient.from("recipe_may_contain").delete().eq("recipe_id", recipeId);
     } else {
       const { data, error } = await supabaseClient.from("recipes").insert(recipePayload).select().single();
@@ -268,6 +292,19 @@ async function saveRecipe(e) {
       await supabaseClient.from("recipe_may_contain").insert({ recipe_id: recipeId, allergen_id: allergenId });
     }
 
+    // استخدام هذه الوصفة داخل منتج نهائي آخر (ربط عكسي)
+    const usedInRows = Array.from(document.querySelectorAll(".used-in-row"));
+    for (const row of usedInRows) {
+      const parentId = row.querySelector(".used-in-parent").value;
+      if (!parentId) continue;
+      await supabaseClient.from("recipe_components").insert({
+        parent_recipe_id: parentId,
+        component_recipe_id: recipeId,
+        amount: row.querySelector(".used-in-amount").value || null,
+        unit: row.querySelector(".used-in-unit").value.trim(),
+      });
+    }
+
     window.location.href = "admin-dashboard.html";
   } catch (err) {
     console.error(err);
@@ -297,6 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("add-ingredient-btn").addEventListener("click", () => addIngredientRow());
   document.getElementById("add-step-btn").addEventListener("click", () => addStepBlock());
   document.getElementById("add-component-btn").addEventListener("click", () => addComponentRow());
+  document.getElementById("add-used-in-btn").addEventListener("click", () => addUsedInRow());
   document.getElementById("cover_image_file").addEventListener("change", (e) => {
     if (e.target.files[0]) uploadCoverImage(e.target.files[0]);
   });

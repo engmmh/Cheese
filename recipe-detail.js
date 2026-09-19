@@ -47,19 +47,25 @@ async function fetchFullRecipe(recipeId) {
     containsAllergens = ia || [];
   }
 
+  const { data: usedInParents } = await supabaseClient
+    .from("recipe_components")
+    .select("parent_recipe_id, recipes:parent_recipe_id(id, title)")
+    .eq("component_recipe_id", recipeId);
+
   return {
     recipe,
     category,
     recipeIngredients: recipeIngredients || [],
     steps: steps || [],
     components: components || [],
+    usedInParents: usedInParents || [],
     mayContain: mayContain || [],
     containsAllergens,
   };
 }
 
 function renderRecipeDetail(data) {
-  const { recipe, category, recipeIngredients, steps, components, mayContain, containsAllergens } = data;
+  const { recipe, category, recipeIngredients, steps, components, usedInParents, mayContain, containsAllergens } = data;
 
   document.title = recipe.title + " — دفتر الوصفات";
   document.getElementById("breadcrumb").innerHTML = `
@@ -71,6 +77,9 @@ function renderRecipeDetail(data) {
     : "";
   document.getElementById("recipe-title").innerHTML = recipe.title + (recipe.title_en ? `<span class="title-en-hero">${recipe.title_en}</span>` : "");
   document.getElementById("recipe-desc").textContent = recipe.short_description || "";
+  document.getElementById("type-badge").innerHTML = recipe.is_sub_recipe
+    ? `<span class="badge badge-sub">🧩 وصفة فرعية</span>`
+    : `<span class="badge" style="background:var(--success-bg); color:var(--success-ink);">✅ منتج نهائي</span>`;
 
   const infoStrip = document.getElementById("info-strip");
   const infoItems = [];
@@ -102,7 +111,7 @@ function renderRecipeDetail(data) {
       .join("");
   }
 
-  // الوصفات الفرعية (Sub-recipes)
+  // الوصفات الفرعية (Sub-recipes) التي تستخدمها هذه الوصفة
   const subPanel = document.getElementById("sub-recipe-panel");
   if (components.length > 0) {
     subPanel.style.display = "block";
@@ -114,15 +123,26 @@ function renderRecipeDetail(data) {
       .join("");
   }
 
+  // المنتجات النهائية التي تستخدم هذه الوصفة (ربط عكسي)
+  const usedInPanel = document.getElementById("used-in-panel");
+  if (usedInParents.length > 0) {
+    usedInPanel.style.display = "block";
+    document.getElementById("used-in-list").innerHTML = usedInParents
+      .map(
+        (u) => `<div class="sub-recipe-note">تُستخدم داخل <a href="recipe.html?id=${u.parent_recipe_id}">${u.recipes?.title || "منتج نهائي"}</a></div>`
+      )
+      .join("");
+  }
+
   // مسببات الحساسية
   const allergenPanel = document.getElementById("allergen-panel");
   const uniqueContains = Array.from(new Map(containsAllergens.map((a) => [a.allergens?.name, a.allergens])).values()).filter(Boolean);
   const uniqueMayContain = Array.from(new Map(mayContain.map((a) => [a.allergens?.name, a.allergens])).values()).filter(Boolean);
 
   if (uniqueContains.length === 0 && uniqueMayContain.length === 0) {
-    allergenPanel.innerHTML = `<h2>مسببات الحساسية</h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة</p>`;
+    allergenPanel.innerHTML = `<h2>⚠️ مسببات الحساسية</h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة</p>`;
   } else {
-    let html = `<h2>مسببات الحساسية</h2>`;
+    let html = `<h2>⚠️ مسببات الحساسية</h2>`;
     if (uniqueContains.length > 0) {
       html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin-bottom:8px;">يحتوي على:</div>
         <div class="allergen-tags">${uniqueContains.map((a) => `<span class="allergen-tag">${a.icon || ""} ${a.name_ar || a.name}</span>`).join("")}</div>`;

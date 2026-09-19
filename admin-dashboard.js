@@ -20,10 +20,11 @@ async function loadDashboard() {
       <tr>
         <td>${r.title}</td>
         <td>${r.categories?.name || "—"}</td>
-        <td>${r.is_sub_recipe ? "وصفة فرعية" : "منتج نهائي"}</td>
+        <td>${r.is_sub_recipe ? "🧩 وصفة فرعية" : "✅ منتج نهائي"}</td>
         <td>${r.has_missing_data ? '<span class="badge badge-warn">⚠ ناقصة</span>' : "—"}</td>
         <td class="actions">
-          <a class="btn btn-secondary btn-sm" href="admin-recipe-form.html?id=${r.id}">تعديل</a>
+          <a class="btn btn-secondary btn-sm" href="admin-recipe-form.html?id=${r.id}">تعديل كامل</a>
+          <button class="btn btn-secondary btn-sm" onclick="quickRenameRecipe('${r.id}','${(r.title || "").replace(/'/g, "\\'")}')">✏ الاسم</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">حذف</button>
         </td>
       </tr>`
@@ -36,6 +37,13 @@ async function loadDashboard() {
 async function deleteRecipe(id) {
   if (!confirm("متأكد إنك عايز تحذف الوصفة دي؟")) return;
   await supabaseClient.from("recipes").delete().eq("id", id);
+  loadDashboard();
+}
+
+async function quickRenameRecipe(id, currentTitle) {
+  const newTitle = prompt("الاسم الجديد للوصفة:", currentTitle);
+  if (!newTitle || !newTitle.trim()) return;
+  await supabaseClient.from("recipes").update({ title: newTitle.trim() }).eq("id", id);
   loadDashboard();
 }
 

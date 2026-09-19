@@ -21,6 +21,7 @@
   <section class="recipe-hero">
     <div class="container">
       <div class="breadcrumb" id="breadcrumb"></div>
+      <div id="type-badge" style="margin-bottom:10px;"></div>
       <div id="cover-image-wrap"></div>
       <h1 id="recipe-title"></h1>
       <p class="desc" id="recipe-desc"></p>
@@ -38,23 +39,27 @@
     <div class="detail-layout">
       <aside>
         <div class="panel">
-          <h2>المكونات</h2>
+          <h2>🧾 المكونات</h2>
           <ul class="ingredients-list" id="ingredients-list"></ul>
         </div>
         <div class="panel" id="sub-recipe-panel" style="display:none;">
-          <h2>يستخدم وصفات فرعية</h2>
+          <h2>🧩 يستخدم وصفات فرعية</h2>
           <div id="sub-recipe-list"></div>
+        </div>
+        <div class="panel" id="used-in-panel" style="display:none;">
+          <h2>🔗 تُستخدم داخل</h2>
+          <div id="used-in-list"></div>
         </div>
         <div class="panel" id="allergen-panel"></div>
       </aside>
 
       <main>
         <div class="panel">
-          <h2>خطوات التحضير</h2>
+          <h2>🔥 خطوات التحضير</h2>
           <div class="steps-list" id="steps-list"></div>
         </div>
         <div class="panel" id="general-notes-panel" style="display:none;">
-          <h2>ملاحظات جودة عامة</h2>
+          <h2>📝 ملاحظات جودة عامة</h2>
           <div class="general-notes" id="general-notes-text"></div>
         </div>
       </main>
