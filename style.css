@@ -121,6 +121,45 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--accent);
 }
 
+/* ---------- Type toggle (final vs sub-recipe) ---------- */
+.type-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 0 6px;
+}
+
+.type-btn {
+  padding: 11px 24px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.type-btn:hover { border-color: var(--accent); }
+
+.type-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.subtype-heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent-dark);
+  margin: 30px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-soft);
+}
+.subtype-heading:first-child { margin-top: 0; }
+
 /* ---------- Category chips ---------- */
 .categories-row {
   display: flex;
@@ -533,6 +572,48 @@ textarea { resize: vertical; min-height: 80px; }
   border-bottom: 1px solid var(--line);
   margin-bottom: 30px;
 }
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: 18px 20px;
+}
+
+.stat-card .num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-card .label {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+.dash-filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.dash-tab {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.dash-tab:hover { border-color: var(--accent); }
+.dash-tab.active { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 .admin-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius-m); overflow: hidden; border: 1px solid var(--line); }
 .admin-table th, .admin-table td { padding: 13px 16px; text-align: right; border-bottom: 1px solid var(--line); font-size: 0.9rem; }

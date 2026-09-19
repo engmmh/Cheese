@@ -5,6 +5,7 @@
 let allCategories = [];
 let allRecipes = [];
 let activeCategoryId = null;
+let activeType = "all";
 
 async function loadHomeData() {
   const { data: categories, error: catErr } = await supabaseClient
@@ -15,7 +16,6 @@ async function loadHomeData() {
   const { data: recipes, error: recErr } = await supabaseClient
     .from("recipes")
     .select("*")
-    .eq("is_sub_recipe", false)
     .order("created_at", { ascending: false });
 
   if (catErr || recErr) {
@@ -57,46 +57,79 @@ function renderRecipes() {
   const searchTerm = (document.getElementById("search-input").value || "").trim().toLowerCase();
 
   let list = allRecipes;
+  if (activeType === "final") list = list.filter((r) => !r.is_sub_recipe);
+  if (activeType === "sub") list = list.filter((r) => r.is_sub_recipe);
   if (activeCategoryId) list = list.filter((r) => r.category_id === activeCategoryId);
-  if (searchTerm) list = list.filter((r) => (r.title || "").toLowerCase().includes(searchTerm));
+  if (searchTerm) list = list.filter((r) => (r.title || "").toLowerCase().includes(searchTerm) || (r.title_en || "").toLowerCase().includes(searchTerm));
 
   const titleEl = document.getElementById("grid-title");
   const cat = allCategories.find((c) => c.id === activeCategoryId);
-  titleEl.textContent = cat ? `وصفات ${cat.name}` : "كل الوصفات";
+  const typeLabel = activeType === "final" ? "المنتجات النهائية" : activeType === "sub" ? "الوصفات الفرعية" : "كل الوصفات";
+  titleEl.textContent = cat ? `${typeLabel} — ${cat.name}` : typeLabel;
 
   if (list.length === 0) {
-    grid.innerHTML = `<div class="empty-state">لا توجد وصفات في هذا التصنيف حتى الآن.</div>`;
+    grid.innerHTML = `<div class="empty-state">لا توجد وصفات في هذا القسم حتى الآن.</div>`;
     return;
   }
 
-  grid.innerHTML = list
-    .map((r) => {
-      const cat = allCategories.find((c) => c.id === r.category_id);
-      const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
-      const thumb = r.cover_image_url
-        ? `<img src="${r.cover_image_url}" alt="${r.title}">`
-        : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
-      const missingBadge = r.has_missing_data
-        ? `<span class="badge badge-warn">⚠ بيانات ناقصة</span>`
-        : "";
-      return `
-        <a class="recipe-card" href="recipe.html?id=${r.id}">
-          <div class="thumb">${thumb}</div>
-          <div class="body">
-            <div class="cat-label">${cat ? cat.name : ""}</div>
-            <h3>${r.title}${r.title_en ? ` <span class="title-en">${r.title_en}</span>` : ""}</h3>
-            <p>${r.short_description || ""}</p>
-            <div class="meta-row">
-              ${r.total_time ? `<span>⏱ ${r.total_time}</span>` : ""}
-              ${missingBadge}
-            </div>
+  function cardHtml(r) {
+    const cat = allCategories.find((c) => c.id === r.category_id);
+    const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
+    const thumb = r.cover_image_url
+      ? `<img src="${r.cover_image_url}" alt="${r.title}">`
+      : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
+    const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة</span>` : "";
+    return `
+      <a class="recipe-card" href="recipe.html?id=${r.id}">
+        <div class="thumb">${thumb}</div>
+        <div class="body">
+          <div class="cat-label">${cat ? cat.name : ""}</div>
+          <h3>${r.title}${r.title_en ? ` <span class="title-en">${r.title_en}</span>` : ""}</h3>
+          <p>${r.short_description || ""}</p>
+          <div class="meta-row">
+            ${r.total_time ? `<span>⏱ ${r.total_time}</span>` : ""}
+            ${missingBadge}
           </div>
-        </a>`;
-    })
-    .join("");
+        </div>
+      </a>`;
+  }
+
+  // في وضع "الوصفات الفرعية" نقسّم حسب النوع (صوص / كريمة / عجينة...)
+  if (activeType === "sub") {
+    const groups = {};
+    const order = ["صوص", "كريمة", "عجينة / قاعدة", "حشوة", "شراب"];
+    list.forEach((r) => {
+      const t = r.sub_recipe_type || "أخرى";
+      if (!groups[t]) groups[t] = [];
+      groups[t].push(r);
+    });
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+    grid.innerHTML = sortedKeys
+      .map(
+        (t) =>
+          `<div class="subtype-heading">${t}</div>
+           <div class="recipe-grid">${groups[t].map(cardHtml).join("")}</div>`
+      )
+      .join("");
+    grid.className = "";
+  } else {
+    grid.className = "recipe-grid";
+    grid.innerHTML = list.map(cardHtml).join("");
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   loadHomeData();
   document.getElementById("search-input").addEventListener("input", renderRecipes);
+  document.querySelectorAll(".type-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeType = btn.dataset.type;
+      document.querySelectorAll(".type-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderRecipes();
+    });
+  });
 });

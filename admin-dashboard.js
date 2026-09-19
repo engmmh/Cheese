@@ -2,23 +2,51 @@
 // منطق لوحة التحكم الرئيسية
 // ============================================
 
+let allDashRecipes = [];
+let activeDashFilter = "all";
+
 async function loadDashboard() {
   const { data: recipes } = await supabaseClient
     .from("recipes")
     .select("*, categories(name)")
     .order("created_at", { ascending: false });
 
+  allDashRecipes = recipes || [];
+  renderStats();
+  renderDashTable();
+  await loadCategories();
+}
+
+function renderStats() {
+  const total = allDashRecipes.length;
+  const finalCount = allDashRecipes.filter((r) => !r.is_sub_recipe).length;
+  const subCount = allDashRecipes.filter((r) => r.is_sub_recipe).length;
+  const missingCount = allDashRecipes.filter((r) => r.has_missing_data).length;
+
+  document.getElementById("stats-row").innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="label">إجمالي الوصفات</div></div>
+    <div class="stat-card"><div class="num">${finalCount}</div><div class="label">✅ منتجات نهائية</div></div>
+    <div class="stat-card"><div class="num">${subCount}</div><div class="label">🧩 وصفات فرعية</div></div>
+    <div class="stat-card"><div class="num">${missingCount}</div><div class="label">⚠ بيانات ناقصة</div></div>
+  `;
+}
+
+function renderDashTable() {
   const tbody = document.getElementById("recipes-tbody");
-  if (!recipes || recipes.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">لا توجد وصفات بعد</td></tr>`;
+  let list = allDashRecipes;
+  if (activeDashFilter === "final") list = list.filter((r) => !r.is_sub_recipe);
+  if (activeDashFilter === "sub") list = list.filter((r) => r.is_sub_recipe);
+  if (activeDashFilter === "missing") list = list.filter((r) => r.has_missing_data);
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5">لا توجد وصفات في هذا القسم</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = recipes
-    .map(
-      (r) => `
+  function rowHtml(r) {
+    return `
       <tr>
-        <td>${r.title}</td>
+        <td>${r.title}${r.title_en ? ` <span style="color:var(--ink-soft); font-size:0.82rem;">${r.title_en}</span>` : ""}</td>
         <td>${r.categories?.name || "—"}</td>
         <td>${r.is_sub_recipe ? "🧩 وصفة فرعية" : "✅ منتج نهائي"}</td>
         <td>${r.has_missing_data ? '<span class="badge badge-warn">⚠ ناقصة</span>' : "—"}</td>
@@ -27,11 +55,32 @@ async function loadDashboard() {
           <button class="btn btn-secondary btn-sm" onclick="quickRenameRecipe('${r.id}','${(r.title || "").replace(/'/g, "\\'")}')">✏ الاسم</button>
           <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">حذف</button>
         </td>
-      </tr>`
-    )
-    .join("");
+      </tr>`;
+  }
 
-  await loadCategories();
+  // تجميع الوصفات الفرعية حسب النوع (صوص / كريمة / عجينة...) عند فلتر "فرعية" أو "الكل"
+  if (activeDashFilter === "sub") {
+    const order = ["صوص", "كريمة", "عجينة / قاعدة", "حشوة", "شراب"];
+    const groups = {};
+    list.forEach((r) => {
+      const t = r.sub_recipe_type || "غير مصنّف";
+      if (!groups[t]) groups[t] = [];
+      groups[t].push(r);
+    });
+    const keys = Object.keys(groups).sort((a, b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+    tbody.innerHTML = keys
+      .map(
+        (t) =>
+          `<tr><td colspan="5" style="background:var(--bg); font-weight:700; color:var(--accent-dark);">${t}</td></tr>` +
+          groups[t].map(rowHtml).join("")
+      )
+      .join("");
+  } else {
+    tbody.innerHTML = list.map(rowHtml).join("");
+  }
 }
 
 async function deleteRecipe(id) {
@@ -100,4 +149,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!session) return;
   document.getElementById("user-email").textContent = session.user.email;
   loadDashboard();
+  document.querySelectorAll(".dash-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      activeDashFilter = tab.dataset.filter;
+      document.querySelectorAll(".dash-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      renderDashTable();
+    });
+  });
 });

@@ -21,8 +21,15 @@
     </div>
   </div>
 
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-    <h2 class="section-title" style="padding-bottom:0; margin:0;">كل الوصفات</h2>
+  <div class="stats-row" id="stats-row"></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+    <div class="dash-filter-tabs" id="dash-filter-tabs">
+      <button class="dash-tab active" data-filter="all">الكل</button>
+      <button class="dash-tab" data-filter="final">✅ منتجات نهائية</button>
+      <button class="dash-tab" data-filter="sub">🧩 وصفات فرعية</button>
+      <button class="dash-tab" data-filter="missing">⚠ بيانات ناقصة</button>
+    </div>
     <a href="admin-recipe-form.html" class="btn btn-primary">+ إضافة وصفة جديدة</a>
   </div>
 

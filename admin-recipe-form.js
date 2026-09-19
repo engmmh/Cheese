@@ -171,6 +171,8 @@ async function loadExistingRecipe(id) {
   showExistingCoverPreview(recipe.cover_image_url);
   document.getElementById("is_sub_recipe").checked = !!recipe.is_sub_recipe;
   document.getElementById("has_missing_data").checked = !!recipe.has_missing_data;
+  document.getElementById("sub_recipe_type").value = recipe.sub_recipe_type || "";
+  document.getElementById("sub-type-wrap").style.display = recipe.is_sub_recipe ? "block" : "none";
 
   const { data: ri } = await supabaseClient
     .from("recipe_ingredients")
@@ -225,6 +227,7 @@ async function saveRecipe(e) {
       cover_image_url: document.getElementById("cover_image_url").value.trim(),
       is_sub_recipe: document.getElementById("is_sub_recipe").checked,
       has_missing_data: document.getElementById("has_missing_data").checked,
+      sub_recipe_type: document.getElementById("is_sub_recipe").checked ? (document.getElementById("sub_recipe_type").value || null) : null,
     };
 
     let recipeId = editingRecipeId;
@@ -335,6 +338,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("add-step-btn").addEventListener("click", () => addStepBlock());
   document.getElementById("add-component-btn").addEventListener("click", () => addComponentRow());
   document.getElementById("add-used-in-btn").addEventListener("click", () => addUsedInRow());
+  document.getElementById("is_sub_recipe").addEventListener("change", (e) => {
+    document.getElementById("sub-type-wrap").style.display = e.target.checked ? "block" : "none";
+  });
   document.getElementById("cover_image_file").addEventListener("change", (e) => {
     if (e.target.files[0]) uploadCoverImage(e.target.files[0]);
   });
