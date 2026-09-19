@@ -78,7 +78,7 @@ function renderRecipes() {
     const thumb = r.cover_image_url
       ? `<img src="${r.cover_image_url}" alt="${r.title}">`
       : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
-    const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة</span>` : "";
+    const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة<span class="label-en">Missing data</span></span>` : "";
     return `
       <a class="recipe-card" href="recipe.html?id=${r.id}">
         <div class="thumb">${thumb}</div>

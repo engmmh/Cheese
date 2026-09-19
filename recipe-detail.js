@@ -78,17 +78,17 @@ function renderRecipeDetail(data) {
   document.getElementById("recipe-title").innerHTML = recipe.title + (recipe.title_en ? `<span class="title-en-hero">${recipe.title_en}</span>` : "");
   document.getElementById("recipe-desc").textContent = recipe.short_description || "";
   document.getElementById("type-badge").innerHTML = recipe.is_sub_recipe
-    ? `<span class="badge badge-sub">🧩 وصفة فرعية</span>`
-    : `<span class="badge" style="background:var(--success-bg); color:var(--success-ink);">✅ منتج نهائي</span>`;
+    ? `<span class="badge badge-sub">🧩 وصفة فرعية<span class="label-en">Sub-recipe</span></span>`
+    : `<span class="badge" style="background:var(--success-bg); color:var(--success-ink);">✅ منتج نهائي<span class="label-en">Final Product</span></span>`;
 
   const infoStrip = document.getElementById("info-strip");
   const infoItems = [];
-  if (recipe.servings) infoItems.push(["الكمية الناتجة", recipe.servings]);
-  if (recipe.total_time) infoItems.push(["وقت التحضير", recipe.total_time]);
-  if (recipe.shelf_life_days) infoItems.push(["مدة الصلاحية", `${recipe.shelf_life_days} يوم`]);
-  infoItems.push(["حرارة الثلاجة", recipe.fridge_temp || "—"]);
-  infoItems.push(["حرارة الفريزر", recipe.freezer_temp || "—"]);
-  if (recipe.cutting_size) infoItems.push(["مقاس التقطيع", recipe.cutting_size]);
+  if (recipe.servings) infoItems.push(["الكمية الناتجة / Yield", recipe.servings]);
+  if (recipe.total_time) infoItems.push(["وقت التحضير / Time", recipe.total_time]);
+  if (recipe.shelf_life_days) infoItems.push(["مدة الصلاحية / Shelf life", `${recipe.shelf_life_days} يوم / days`]);
+  infoItems.push(["حرارة الثلاجة / Fridge", recipe.fridge_temp || "—"]);
+  infoItems.push(["حرارة الفريزر / Freezer", recipe.freezer_temp || "—"]);
+  if (recipe.cutting_size) infoItems.push(["مقاس التقطيع / Cut size", recipe.cutting_size]);
   infoStrip.innerHTML = infoItems
     .map(([label, value]) => `<div class="info-item"><span class="label">${label}</span><span class="value">${value}</span></div>`)
     .join("");
@@ -100,12 +100,12 @@ function renderRecipeDetail(data) {
   // المكونات
   const ingList = document.getElementById("ingredients-list");
   if (recipeIngredients.length === 0) {
-    ingList.innerHTML = `<li>لا توجد مكونات مسجلة بعد</li>`;
+    ingList.innerHTML = `<li>لا توجد مكونات مسجلة بعد <span class="label-en">No ingredients yet</span></li>`;
   } else {
     ingList.innerHTML = recipeIngredients
       .map((ri) => {
         const ing = ri.ingredients;
-        const label = ing?.name_ar ? `${ing.name_ar} <span class="title-en">${ing.name}</span>` : (ing?.name || "—");
+        const label = ing?.name_ar ? `${ing.name_ar} <span class="title-en">${ing.name}</span>` : (ing?.name || "—"); // already bilingual
         return `<li><span>${ing?.icon ? `<span class="ing-icon">${ing.icon}</span>` : ""}${label}</span><span class="amt">${ri.amount || ""} ${ri.unit || ""}</span></li>`;
       })
       .join("");
@@ -140,15 +140,15 @@ function renderRecipeDetail(data) {
   const uniqueMayContain = Array.from(new Map(mayContain.map((a) => [a.allergens?.name, a.allergens])).values()).filter(Boolean);
 
   if (uniqueContains.length === 0 && uniqueMayContain.length === 0) {
-    allergenPanel.innerHTML = `<h2>⚠️ مسببات الحساسية</h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة</p>`;
+    allergenPanel.innerHTML = `<h2>⚠️ مسببات الحساسية<span class="label-en">Allergens</span></h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة <span class="label-en">None recorded</span></p>`;
   } else {
     let html = `<h2>⚠️ مسببات الحساسية</h2>`;
     if (uniqueContains.length > 0) {
-      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin-bottom:8px;">يحتوي على:</div>
+      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin-bottom:8px;">يحتوي على / Contains:</div>
         <div class="allergen-tags">${uniqueContains.map((a) => `<span class="allergen-tag">${a.icon || ""} ${a.name_ar || a.name}</span>`).join("")}</div>`;
     }
     if (uniqueMayContain.length > 0) {
-      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin:14px 0 8px;">قد يحتوي على آثار من:</div>
+      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin:14px 0 8px;">قد يحتوي على آثار من / May contain traces of:</div>
         <div class="allergen-tags">${uniqueMayContain.map((a) => `<span class="allergen-tag may-contain">${a.icon || ""} ${a.name_ar || a.name}</span>`).join("")}</div>`;
     }
     allergenPanel.innerHTML = html;
@@ -157,7 +157,7 @@ function renderRecipeDetail(data) {
   // الخطوات
   const stepsList = document.getElementById("steps-list");
   if (steps.length === 0) {
-    stepsList.innerHTML = `<p style="color:var(--ink-soft);">لا توجد خطوات مسجلة بعد</p>`;
+    stepsList.innerHTML = `<p style="color:var(--ink-soft);">لا توجد خطوات مسجلة بعد <span class="label-en">No steps yet</span></p>`;
   } else {
     stepsList.innerHTML = steps
       .map((s) => {

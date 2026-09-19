@@ -59,7 +59,12 @@ function stepLabel(n) {
 function renderIngredientsBlock(ingredients) {
   if (!ingredients.length) return `<p class="p-note">لا توجد مكونات مسجلة</p>`;
   return ingredients
-    .map((i) => `<p class="p-ingredient">${i.ingredients?.name_ar || i.ingredients?.name || "—"} : <b>${i.amount || ""} ${i.unit || ""}</b></p>`)
+    .map((i) => {
+      const ar = i.ingredients?.name_ar;
+      const en = i.ingredients?.name;
+      const label = ar && en ? `${ar} / ${en}` : (ar || en || "—");
+      return `<p class="p-ingredient">${label} : <b>${i.amount || ""} ${i.unit || ""}</b></p>`;
+    })
     .join("");
 }
 
@@ -68,9 +73,9 @@ function renderStepsBlock(steps) {
   return steps
     .map((s) => {
       const extras = [];
-      if (s.temperature) extras.push(`الحرارة: ${s.temperature}`);
-      if (s.duration) extras.push(`المدة: ${s.duration}`);
-      if (s.mixing_method) extras.push(`التقليب: ${s.mixing_method}`);
+      if (s.temperature) extras.push(`الحرارة / Temp: ${s.temperature}`);
+      if (s.duration) extras.push(`المدة / Duration: ${s.duration}`);
+      if (s.mixing_method) extras.push(`التقليب / Mixing: ${s.mixing_method}`);
       const extrasText = extras.length ? ` (${extras.join(" — ")})` : "";
       return `<p class="p-step"><span class="p-step-label">${stepLabel(s.step_number)}</span> ${s.instructions || s.title || ""}${extrasText}</p>`;
     })
@@ -85,22 +90,22 @@ function renderPrintPage(data) {
   if (recipe.title_en) html += `<p style="font-size:12pt; color:#666; margin:-10px 0 16px; direction:ltr;">${recipe.title_en}</p>`;
 
   html += renderIngredientsBlock(recipeIngredients);
-  html += `<p class="p-method-label">طريقة التحضير:</p>`;
+  html += `<p class="p-method-label">طريقة التحضير / Method:</p>`;
   html += renderStepsBlock(steps);
 
   subRecipes.forEach((sub) => {
     html += `<h2 class="p-sub-title">${sub.title}${sub.amount ? ` — ${sub.amount} ${sub.unit || ""}` : ""}</h2>`;
     html += renderIngredientsBlock(sub.ingredients);
-    html += `<p class="p-method-label">طريقة التحضير:</p>`;
+    html += `<p class="p-method-label">طريقة التحضير / Method:</p>`;
     html += renderStepsBlock(sub.steps);
   });
 
   const noteParts = [];
   if (recipe.general_quality_notes) noteParts.push(recipe.general_quality_notes);
   if (recipe.shelf_life_days) noteParts.push(`مدة الصلاحية: ${recipe.shelf_life_days} يوم`);
-  noteParts.push(`تحفظ في الثلاجة عند ${recipe.fridge_temp || "—"} أو الفريزر عند ${recipe.freezer_temp || "—"}`);
+  noteParts.push(`تحفظ في الثلاجة عند ${recipe.fridge_temp || "—"} أو الفريزر عند ${recipe.freezer_temp || "—"} / Store refrigerated at ${recipe.fridge_temp || "—"} or frozen at ${recipe.freezer_temp || "—"}`);
 
-  html += `<p class="p-final-note"><b>ملاحظة:</b> ${noteParts.join(" — ")}</p>`;
+  html += `<p class="p-final-note"><b>ملاحظة / Note:</b> ${noteParts.join(" — ")}</p>`;
 
   document.getElementById("print-sheet").innerHTML = html;
 }

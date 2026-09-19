@@ -41,7 +41,7 @@ async function loadFormPrereqs() {
   const { data: categories } = await supabaseClient.from("categories").select("*").order("name");
   const catSelect = document.getElementById("category_id");
   catSelect.innerHTML =
-    `<option value="">— بدون تصنيف —</option>` +
+    `<option value="">— بدون تصنيف / No category —</option>` +
     (categories || []).map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
 
   const { data: ingredients } = await supabaseClient.from("ingredients").select("*").order("name");
@@ -67,9 +67,9 @@ function addIngredientRow(values = {}) {
   const row = document.createElement("div");
   row.className = "repeat-row ingredient-row";
   row.innerHTML = `
-    <div><input type="text" class="ing-name" list="ingredients-datalist" placeholder="اسم المكون" value="${values.name || ""}"></div>
-    <div><input type="number" step="any" class="ing-amount" placeholder="الكمية" value="${values.amount || ""}"></div>
-    <div><input type="text" class="ing-unit" placeholder="الوحدة (g, kg, pcs...)" value="${values.unit || ""}"></div>
+    <div><input type="text" class="ing-name" list="ingredients-datalist" placeholder="اسم المكون / Ingredient name" value="${values.name || ""}"></div>
+    <div><input type="number" step="any" class="ing-amount" placeholder="الكمية / Amount" value="${values.amount || ""}"></div>
+    <div><input type="text" class="ing-unit" placeholder="الوحدة / Unit (g, kg, pcs...)" value="${values.unit || ""}"></div>
     <button type="button" class="remove-btn" onclick="this.closest('.ingredient-row').remove()">✕</button>
   `;
   container.appendChild(row);
@@ -82,33 +82,33 @@ function addStepBlock(values = {}) {
   block.className = "step-form-block step-block";
   block.innerHTML = `
     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-      <strong>خطوة</strong>
+      <strong>خطوة <span class="label-en">Step</span></strong>
       <button type="button" class="remove-btn" onclick="this.closest('.step-block').remove()">✕</button>
     </div>
     <div class="field-group">
-      <label>عنوان الخطوة</label>
+      <label>عنوان الخطوة<span class="label-en">Step title</span></label>
       <input type="text" class="step-title" value="${values.title || ""}">
     </div>
     <div class="field-group">
-      <label>تفاصيل الخطوة</label>
+      <label>تفاصيل الخطوة<span class="label-en">Step details</span></label>
       <textarea class="step-instructions">${values.instructions || ""}</textarea>
     </div>
     <div class="field-row">
       <div class="field-group">
-        <label>درجة الحرارة</label>
+        <label>درجة الحرارة<span class="label-en">Temperature</span></label>
         <input type="text" class="step-temp" placeholder="مثال: 180°C" value="${values.temperature || ""}">
       </div>
       <div class="field-group">
-        <label>المدة</label>
+        <label>المدة<span class="label-en">Duration</span></label>
         <input type="text" class="step-duration" placeholder="مثال: 25 دقيقة" value="${values.duration || ""}">
       </div>
     </div>
     <div class="field-group">
-      <label>طريقة التقليب/الخلط</label>
+      <label>طريقة التقليب/الخلط<span class="label-en">Mixing method</span></label>
       <input type="text" class="step-mixing" value="${values.mixing_method || ""}">
     </div>
     <div class="field-group">
-      <label>ملاحظة جودة لهذه الخطوة</label>
+      <label>ملاحظة جودة لهذه الخطوة<span class="label-en">Quality note</span></label>
       <input type="text" class="step-quality" value="${values.quality_note || ""}">
     </div>
   `;
@@ -125,9 +125,9 @@ function addUsedInRow(values = {}) {
     .map((r) => `<option value="${r.id}" ${values.parent_recipe_id === r.id ? "selected" : ""}>${r.title}</option>`)
     .join("");
   row.innerHTML = `
-    <div><select class="used-in-parent"><option value="">اختر المنتج النهائي</option>${options}</select></div>
-    <div><input type="number" step="any" class="used-in-amount" placeholder="الكمية" value="${values.amount || ""}"></div>
-    <div><input type="text" class="used-in-unit" placeholder="الوحدة" value="${values.unit || ""}"></div>
+    <div><select class="used-in-parent"><option value="">اختر المنتج النهائي / Select product</option>${options}</select></div>
+    <div><input type="number" step="any" class="used-in-amount" placeholder="الكمية / Amount" value="${values.amount || ""}"></div>
+    <div><input type="text" class="used-in-unit" placeholder="الوحدة / Unit" value="${values.unit || ""}"></div>
     <button type="button" class="remove-btn" onclick="this.closest('.used-in-row').remove()">✕</button>
   `;
   container.appendChild(row);
@@ -143,9 +143,9 @@ function addComponentRow(values = {}) {
     .map((r) => `<option value="${r.id}" ${values.component_recipe_id === r.id ? "selected" : ""}>${r.title}</option>`)
     .join("");
   row.innerHTML = `
-    <div><select class="comp-recipe"><option value="">اختر الوصفة الفرعية</option>${options}</select></div>
-    <div><input type="number" step="any" class="comp-amount" placeholder="الكمية" value="${values.amount || ""}"></div>
-    <div><input type="text" class="comp-unit" placeholder="الوحدة" value="${values.unit || ""}"></div>
+    <div><select class="comp-recipe"><option value="">اختر الوصفة الفرعية / Select sub-recipe</option>${options}</select></div>
+    <div><input type="number" step="any" class="comp-amount" placeholder="الكمية / Amount" value="${values.amount || ""}"></div>
+    <div><input type="text" class="comp-unit" placeholder="الوحدة / Unit" value="${values.unit || ""}"></div>
     <button type="button" class="remove-btn" onclick="this.closest('.component-row').remove()">✕</button>
   `;
   container.appendChild(row);

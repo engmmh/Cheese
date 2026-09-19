@@ -16,14 +16,14 @@ async function loadIngredientsPage() {
 
   const tbody = document.getElementById("ingredients-tbody");
   if (!ingredients || ingredients.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4">لا توجد مكونات بعد</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4">لا توجد مكونات بعد <span class="label-en">No ingredients yet</span></td></tr>`;
     return;
   }
 
   let html = "";
   let lastCategory = null;
   ingredients.forEach((ing) => {
-    const cat = ing.ingredient_category || "غير مصنّف";
+    const cat = ing.ingredient_category || "غير مصنّف / Uncategorized";
     if (cat !== lastCategory) {
       html += `<tr><td colspan="4" style="background:var(--bg); font-weight:700; color:var(--accent-dark);">${cat}</td></tr>`;
       lastCategory = cat;
@@ -42,8 +42,8 @@ async function loadIngredientsPage() {
       <tr>
         <td>${ing.icon || ""} ${ing.name_ar || ""} <span style="color:var(--ink-soft); font-size:0.82rem;">${ing.name}</span></td>
         <td>${checkboxes}</td>
-        <td><button class="btn btn-secondary btn-sm" onclick="editIngredient('${ing.id}')">تعديل</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteIngredient('${ing.id}')">حذف</button></td>
+        <td><button class="btn btn-secondary btn-sm" onclick="editIngredient('${ing.id}')">تعديل / Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteIngredient('${ing.id}')">حذف / Delete</button></td>
       </tr>`;
   });
   tbody.innerHTML = html;
