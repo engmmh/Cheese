@@ -7,6 +7,31 @@ let masterIngredients = [];
 let allAllergensList = [];
 let allRecipesForComponents = [];
 
+// ---------- رفع صورة المنتج ----------
+async function uploadCoverImage(file) {
+  const statusEl = document.getElementById("cover-preview");
+  statusEl.innerHTML = `<span style="color:var(--ink-soft); font-size:0.85rem;">جاري رفع الصورة...</span>`;
+
+  const ext = file.name.split(".").pop();
+  const path = `recipe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error: uploadError } = await supabaseClient.storage.from("recipe-images").upload(path, file);
+  if (uploadError) {
+    statusEl.innerHTML = `<span style="color:#B3261E; font-size:0.85rem;">فشل رفع الصورة: ${uploadError.message}</span>`;
+    return;
+  }
+
+  const { data } = supabaseClient.storage.from("recipe-images").getPublicUrl(path);
+  document.getElementById("cover_image_url").value = data.publicUrl;
+  statusEl.innerHTML = `<img src="${data.publicUrl}" style="width:160px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--line);">`;
+}
+
+function showExistingCoverPreview(url) {
+  if (!url) return;
+  document.getElementById("cover-preview").innerHTML =
+    `<img src="${url}" style="width:160px; height:120px; object-fit:cover; border-radius:8px; border:1px solid var(--line);">`;
+}
+
 function getIdParam() {
   return new URLSearchParams(window.location.search).get("id");
 }
@@ -123,6 +148,7 @@ async function loadExistingRecipe(id) {
   document.getElementById("freezer_temp").value = recipe.freezer_temp || "-18°C";
   document.getElementById("cutting_size").value = recipe.cutting_size || "";
   document.getElementById("cover_image_url").value = recipe.cover_image_url || "";
+  showExistingCoverPreview(recipe.cover_image_url);
   document.getElementById("is_sub_recipe").checked = !!recipe.is_sub_recipe;
   document.getElementById("has_missing_data").checked = !!recipe.has_missing_data;
 
@@ -271,5 +297,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("add-ingredient-btn").addEventListener("click", () => addIngredientRow());
   document.getElementById("add-step-btn").addEventListener("click", () => addStepBlock());
   document.getElementById("add-component-btn").addEventListener("click", () => addComponentRow());
+  document.getElementById("cover_image_file").addEventListener("change", (e) => {
+    if (e.target.files[0]) uploadCoverImage(e.target.files[0]);
+  });
   document.getElementById("recipe-form").addEventListener("submit", saveRecipe);
 });

@@ -72,9 +72,10 @@ function renderRecipes() {
   grid.innerHTML = list
     .map((r) => {
       const cat = allCategories.find((c) => c.id === r.category_id);
+      const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
       const thumb = r.cover_image_url
         ? `<img src="${r.cover_image_url}" alt="${r.title}">`
-        : (r.title || "؟").charAt(0);
+        : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
       const missingBadge = r.has_missing_data
         ? `<span class="badge badge-warn">⚠ بيانات ناقصة</span>`
         : "";

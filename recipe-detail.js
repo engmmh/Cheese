@@ -66,6 +66,9 @@ function renderRecipeDetail(data) {
     <a href="index.html">الرئيسية</a> ›
     ${category ? `<a href="index.html?cat=${category.id}">${category.name}</a> › ` : ""}
     ${recipe.title}`;
+  document.getElementById("cover-image-wrap").innerHTML = recipe.cover_image_url
+    ? `<img class="cover-image" src="${recipe.cover_image_url}" alt="${recipe.title}">`
+    : "";
   document.getElementById("recipe-title").innerHTML = recipe.title + (recipe.title_en ? `<span class="title-en-hero">${recipe.title_en}</span>` : "");
   document.getElementById("recipe-desc").textContent = recipe.short_description || "";
 

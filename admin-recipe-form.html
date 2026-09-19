@@ -54,8 +54,10 @@
         </div>
       </div>
       <div class="field-group">
-        <label>رابط صورة الغلاف (اختياري)</label>
-        <input type="text" id="cover_image_url">
+        <label>صورة المنتج</label>
+        <input type="file" id="cover_image_file" accept="image/*">
+        <input type="hidden" id="cover_image_url">
+        <div id="cover-preview" style="margin-top:12px;"></div>
       </div>
       <div class="field-row">
         <div class="checkbox-row">
