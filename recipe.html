@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="alert alert-error" id="missing-data-banner" style="display:none; margin-top:20px;">
-        ⚠ هذه الوصفة تحتوي على بيانات غير مكتملة (حرارة/زمن/كمية غير مسجلة). راجعها قبل الاعتماد النهائي.<br><span class="label-en">This recipe has incomplete data. Review before final approval.</span>
+        ⚠ هذه الوصفة تحتوي على بيانات غير مكتملة (حرارة/زمن/كمية غير مسجلة). راجعها قبل الاعتماد النهائي.
       </div>
     </div>
   </section>
@@ -48,35 +48,44 @@
     <div class="detail-layout">
       <aside>
         <div class="panel">
-          <h2>🧾 المكونات<span class="label-en">Ingredients</span></h2>
+          <h2>المكونات</h2>
           <ul class="ingredients-list" id="ingredients-list"></ul>
         </div>
-        <div class="panel" id="sub-recipe-panel" style="display:none;">
-          <h2>🧩 يستخدم وصفات فرعية<span class="label-en">Uses sub-recipes</span></h2>
-          <div id="sub-recipe-list"></div>
+
+        <div class="panel" id="relations-panel" style="display:none;">
+          <div id="sub-recipe-panel" style="display:none;">
+            <h2>يستخدم وصفات فرعية</h2>
+            <div id="sub-recipe-list"></div>
+          </div>
+          <hr class="panel-divider" id="relations-divider" style="display:none;">
+          <div id="used-in-panel" style="display:none;">
+            <h2>تُستخدم داخل</h2>
+            <div id="used-in-list"></div>
+          </div>
         </div>
-        <div class="panel" id="used-in-panel" style="display:none;">
-          <h2>🔗 تُستخدم داخل<span class="label-en">Used in</span></h2>
-          <div id="used-in-list"></div>
-        </div>
+
         <div class="panel" id="allergen-panel"></div>
-        <div class="panel" id="cost-panel" style="display:none;">
-          <h2>💰 التكلفة التقديرية<span class="label-en">Estimated Cost</span></h2>
-          <div id="cost-value"></div>
-        </div>
-        <div class="panel" style="text-align:center;">
-          <h2>📱 QR<span class="label-en">Quick access</span></h2>
-          <div id="qr-code-wrap"></div>
+
+        <div class="panel">
+          <div id="cost-panel" style="display:none;">
+            <h2>التكلفة التقديرية</h2>
+            <div id="cost-value"></div>
+          </div>
+          <hr class="panel-divider" id="cost-qr-divider" style="display:none;">
+          <div style="text-align:center;">
+            <h2>مسح سريع</h2>
+            <div id="qr-code-wrap"></div>
+          </div>
         </div>
       </aside>
 
       <main>
         <div class="panel">
-          <h2>🔥 خطوات التحضير<span class="label-en">Steps</span></h2>
+          <h2>خطوات التحضير<span class="label-en">Steps</span></h2>
           <div class="steps-list" id="steps-list"></div>
         </div>
         <div class="panel" id="general-notes-panel" style="display:none;">
-          <h2>📝 ملاحظات جودة عامة<span class="label-en">General notes</span></h2>
+          <h2>ملاحظات جودة عامة<span class="label-en">General notes</span></h2>
           <div class="general-notes" id="general-notes-text"></div>
         </div>
       </main>

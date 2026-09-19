@@ -88,12 +88,12 @@ function renderRecipeDetail(data) {
 
   const infoStrip = document.getElementById("info-strip");
   const infoItems = [];
-  if (recipe.servings) infoItems.push(["الكمية الناتجة / Yield", recipe.servings]);
-  if (recipe.total_time) infoItems.push(["وقت التحضير / Time", recipe.total_time]);
-  if (recipe.shelf_life_days) infoItems.push(["مدة الصلاحية / Shelf life", `${recipe.shelf_life_days} يوم / days`]);
-  infoItems.push(["حرارة الثلاجة / Fridge", recipe.fridge_temp || "—"]);
-  infoItems.push(["حرارة الفريزر / Freezer", recipe.freezer_temp || "—"]);
-  if (recipe.cutting_size) infoItems.push(["مقاس التقطيع / Cut size", recipe.cutting_size]);
+  if (recipe.servings) infoItems.push(["الكمية الناتجة<span class="label-en">Yield</span>", recipe.servings]);
+  if (recipe.total_time) infoItems.push(["وقت التحضير<span class="label-en">Time</span>", recipe.total_time]);
+  if (recipe.shelf_life_days) infoItems.push(["مدة الصلاحية<span class="label-en">Shelf life</span>", `${recipe.shelf_life_days} يوم / days`]);
+  infoItems.push(["حرارة الثلاجة<span class="label-en">Fridge</span>", recipe.fridge_temp || "—"]);
+  infoItems.push(["حرارة الفريزر<span class="label-en">Freezer</span>", recipe.freezer_temp || "—"]);
+  if (recipe.cutting_size) infoItems.push(["مقاس التقطيع<span class="label-en">Cut size</span>", recipe.cutting_size]);
   infoStrip.innerHTML = infoItems
     .map(([label, value]) => `<div class="info-item"><span class="label">${label}</span><span class="value">${value}</span></div>`)
     .join("");
@@ -116,9 +116,12 @@ function renderRecipeDetail(data) {
       .join("");
   }
 
-  // الوصفات الفرعية (Sub-recipes) التي تستخدمها هذه الوصفة
+  // الوصفات الفرعية (Sub-recipes) التي تستخدمها هذه الوصفة + المنتجات التي تستخدمها
   const subPanel = document.getElementById("sub-recipe-panel");
+  const usedInPanel = document.getElementById("used-in-panel");
+
   if (components.length > 0) {
+    document.getElementById("relations-panel").style.display = "block";
     subPanel.style.display = "block";
     document.getElementById("sub-recipe-list").innerHTML = components
       .map(
@@ -128,9 +131,8 @@ function renderRecipeDetail(data) {
       .join("");
   }
 
-  // المنتجات النهائية التي تستخدم هذه الوصفة (ربط عكسي)
-  const usedInPanel = document.getElementById("used-in-panel");
   if (usedInParents.length > 0) {
+    document.getElementById("relations-panel").style.display = "block";
     usedInPanel.style.display = "block";
     document.getElementById("used-in-list").innerHTML = usedInParents
       .map(
@@ -139,21 +141,26 @@ function renderRecipeDetail(data) {
       .join("");
   }
 
+  if (components.length > 0 && usedInParents.length > 0) {
+    document.getElementById("relations-divider").style.display = "block";
+  }
+
+
   // مسببات الحساسية
   const allergenPanel = document.getElementById("allergen-panel");
   const uniqueContains = Array.from(new Map(containsAllergens.map((a) => [a.allergens?.name, a.allergens])).values()).filter(Boolean);
   const uniqueMayContain = Array.from(new Map(mayContain.map((a) => [a.allergens?.name, a.allergens])).values()).filter(Boolean);
 
   if (uniqueContains.length === 0 && uniqueMayContain.length === 0) {
-    allergenPanel.innerHTML = `<h2>⚠️ مسببات الحساسية<span class="label-en">Allergens</span></h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة <span class="label-en">None recorded</span></p>`;
+    allergenPanel.innerHTML = `<h2>مسببات الحساسية<span class="label-en">Allergens</span></h2><p style="color:var(--ink-soft);font-size:0.9rem;">لا توجد مسببات حساسية مسجلة <span class="label-en">None recorded</span></p>`;
   } else {
-    let html = `<h2>⚠️ مسببات الحساسية</h2>`;
+    let html = `<h2>مسببات الحساسية</h2>`;
     if (uniqueContains.length > 0) {
-      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin-bottom:8px;">يحتوي على / Contains:</div>
+      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin-bottom:8px;">يحتوي على:</div>
         <div class="allergen-tags">${uniqueContains.map((a) => `<span class="allergen-tag">${a.icon || ""} ${a.name_ar || a.name}</span>`).join("")}</div>`;
     }
     if (uniqueMayContain.length > 0) {
-      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin:14px 0 8px;">قد يحتوي على آثار من / May contain traces of:</div>
+      html += `<div style="font-size:0.85rem;color:var(--ink-soft);margin:14px 0 8px;">قد يحتوي على آثار من:</div>
         <div class="allergen-tags">${uniqueMayContain.map((a) => `<span class="allergen-tag may-contain">${a.icon || ""} ${a.name_ar || a.name}</span>`).join("")}</div>`;
     }
     allergenPanel.innerHTML = html;
@@ -222,9 +229,10 @@ function renderCost(recipeIngredients) {
   });
   if (!hasAnyCost) return;
   panel.style.display = "block";
+  document.getElementById("cost-qr-divider").style.display = "block";
   document.getElementById("cost-value").innerHTML = `
     <div style="font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--accent);">${total.toFixed(2)} <span style="font-size:0.9rem; color:var(--ink-soft);">جنيه تقريبًا</span></div>
-    <p style="font-size:0.78rem; color:var(--ink-soft); margin-top:8px;">تقدير تقريبي بناءً على أسعار المكونات المسجلة في لوحة التحكم، وقد لا يشمل كل المكونات.<br><span class="label-en">Rough estimate based on recorded ingredient prices; may not cover every ingredient.</span></p>
+    <p style="font-size:0.78rem; color:var(--ink-soft); margin-top:8px;">تقدير تقريبي بناءً على أسعار المكونات المسجلة في لوحة التحكم، وقد لا يشمل كل المكونات.</p>
   `;
 }
 

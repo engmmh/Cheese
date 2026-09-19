@@ -19,7 +19,7 @@
 
   <form id="recipe-form">
     <div class="panel">
-      <h2>ℹ️ معلومات أساسية<span class="label-en">Basic Info</span></h2>
+      <h2>معلومات أساسية<span class="label-en">Basic Info</span></h2>
       <div class="field-row">
         <div class="field-group">
           <label>اسم الوصفة (عربي)<span class="label-en">Recipe name (Arabic)</span></label>
@@ -40,17 +40,17 @@
           <select id="category_id"></select>
         </div>
         <div class="field-group">
-          <label>الكمية الناتجة / عدد الحصص<span class="label-en">Yield / servings</span></label>
+          <label>الكمية الناتجة<span class="label-en">Yield</span> / عدد الحصص<span class="label-en">Yield / servings</span></label>
           <input type="text" id="servings">
         </div>
       </div>
       <div class="field-row">
         <div class="field-group">
-          <label>وقت التحضير الكلي<span class="label-en">Total time</span></label>
+          <label>وقت التحضير<span class="label-en">Time</span> الكلي<span class="label-en">Total time</span></label>
           <input type="text" id="total_time" placeholder="مثال: 45 دقيقة">
         </div>
         <div class="field-group">
-          <label>مقاس التقطيع (لو موجود)<span class="label-en">Cut size (if any)</span></label>
+          <label>مقاس التقطيع<span class="label-en">Cut size</span> (لو موجود)<span class="label-en">Cut size (if any)</span></label>
           <input type="text" id="cutting_size" placeholder="مثال: 7×7 سم">
         </div>
       </div>
@@ -71,38 +71,38 @@
         </div>
         <div class="checkbox-row">
           <input type="checkbox" id="is_featured">
-          <label style="margin:0;">⭐ منتج مميز (يظهر في قسم "منتجات مميزة" بالصفحة الرئيسية)<span class="label-en">Featured product</span></label>
+          <label style="margin:0;">منتج مميز (يظهر في قسم "منتجات مميزة" بالصفحة الرئيسية)<span class="label-en">Featured product</span></label>
         </div>
       </div>
       <div class="field-group" id="sub-type-wrap" style="display:none;">
         <label>نوع الوصفة الفرعية<span class="label-en">Sub-recipe type</span></label>
         <select id="sub_recipe_type">
-          <option value="">— اختر / Select —</option>
-          <option value="صوص">صوص / Sauce</option>
-          <option value="كريمة">كريمة / Cream</option>
-          <option value="عجينة / قاعدة">عجينة / قاعدة / Dough-Base</option>
-          <option value="حشوة">حشوة / Filling</option>
-          <option value="شراب">شراب / Syrup</option>
-          <option value="أخرى">أخرى / Other</option>
+          <option value="">— اختر —</option>
+          <option value="صوص">صوص</option>
+          <option value="كريمة">كريمة</option>
+          <option value="عجينة / قاعدة">عجينة / قاعدة</option>
+          <option value="حشوة">حشوة</option>
+          <option value="شراب">شراب</option>
+          <option value="أخرى">أخرى</option>
         </select>
       </div>
     </div>
 
     <div class="panel">
-      <h2>🧾 المكونات<span class="label-en">Ingredients</span></h2>
+      <h2>المكونات<span class="label-en">Ingredients</span></h2>
       <datalist id="ingredients-datalist"></datalist>
       <div id="ingredients-rows"></div>
       <button type="button" id="add-ingredient-btn" class="btn btn-secondary btn-sm">+ إضافة مكون<span class="label-en">Add ingredient</span></button>
     </div>
 
     <div class="panel">
-      <h2>🔥 خطوات التحضير<span class="label-en">Steps</span></h2>
+      <h2>خطوات التحضير<span class="label-en">Steps</span></h2>
       <div id="steps-blocks"></div>
       <button type="button" id="add-step-btn" class="btn btn-secondary btn-sm">+ إضافة خطوة<span class="label-en">Add step</span></button>
     </div>
 
     <div class="panel">
-      <h2>🔗 استخدام هذه الوصفة داخل منتج نهائي آخر<span class="label-en">Used inside another product</span></h2>
+      <h2>استخدام هذه الوصفة داخل منتج نهائي آخر<span class="label-en">Used inside another product</span></h2>
       <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:-6px;">مثال: أنت الآن جوه "خليط كيك الليمون" وعايز تربطها بمنتج "كيك الليمون" النهائي مباشرة من هنا.</p>
       <div id="used-in-rows"></div>
       <button type="button" id="add-used-in-btn" class="btn btn-secondary btn-sm">+ ربط بمنتج نهائي<span class="label-en">Link to product</span></button>
@@ -116,28 +116,28 @@
     </div>
 
     <div class="panel">
-      <h2>📦 مدة الصلاحية وظروف التخزين<span class="label-en">Shelf life &amp; storage</span></h2>
+      <h2>مدة الصلاحية<span class="label-en">Shelf life</span> وظروف التخزين<span class="label-en">Shelf life &amp; storage</span></h2>
       <div class="field-row">
         <div class="field-group">
-          <label>مدة الصلاحية (بالأيام)<span class="label-en">Shelf life (days)</span></label>
+          <label>مدة الصلاحية<span class="label-en">Shelf life</span> (بالأيام)<span class="label-en">Shelf life (days)</span></label>
           <input type="number" id="shelf_life_days">
         </div>
         <div class="field-group"></div>
       </div>
       <div class="field-row">
         <div class="field-group">
-          <label>حرارة الثلاجة<span class="label-en">Fridge temperature</span></label>
+          <label>حرارة الثلاجة<span class="label-en">Fridge</span><span class="label-en">Fridge temperature</span></label>
           <input type="text" id="fridge_temp">
         </div>
         <div class="field-group">
-          <label>حرارة الفريزر<span class="label-en">Freezer temperature</span></label>
+          <label>حرارة الفريزر<span class="label-en">Freezer</span><span class="label-en">Freezer temperature</span></label>
           <input type="text" id="freezer_temp">
         </div>
       </div>
     </div>
 
     <div class="panel">
-      <h2>⚠️ قد يحتوي على آثار من (حسب خطوط الإنتاج المشتركة)<span class="label-en">May contain traces of</span></h2>
+      <h2>قد يحتوي على آثار من (حسب خطوط الإنتاج المشتركة)<span class="label-en">May contain traces of</span></h2>
       <div class="checkbox-grid" id="may-contain-grid"></div>
       <p style="font-size:0.82rem; color:var(--ink-soft); margin-top:10px;">
         ملحوظة: "يحتوي على" بيتحسب تلقائيًا من المكونات، من غير ما تحتاج تدخله هنا.<br>
@@ -146,7 +146,7 @@
     </div>
 
     <div class="panel">
-      <h2>📝 ملاحظات جودة عامة<span class="label-en">General quality notes</span></h2>
+      <h2>ملاحظات جودة عامة<span class="label-en">General quality notes</span></h2>
       <textarea id="general_quality_notes" rows="4"></textarea>
     </div>
 

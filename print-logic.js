@@ -73,9 +73,9 @@ function renderStepsBlock(steps) {
   return steps
     .map((s) => {
       const extras = [];
-      if (s.temperature) extras.push(`الحرارة / Temp: ${s.temperature}`);
-      if (s.duration) extras.push(`المدة / Duration: ${s.duration}`);
-      if (s.mixing_method) extras.push(`التقليب / Mixing: ${s.mixing_method}`);
+      if (s.temperature) extras.push(`الحرارة<span class="label-en">Temp</span>: ${s.temperature}`);
+      if (s.duration) extras.push(`المدة<span class="label-en">Duration</span>: ${s.duration}`);
+      if (s.mixing_method) extras.push(`التقليب<span class="label-en">Mixing</span>: ${s.mixing_method}`);
       const extrasText = extras.length ? ` (${extras.join(" — ")})` : "";
       return `<p class="p-step"><span class="p-step-label">${stepLabel(s.step_number)}</span> ${s.instructions || s.title || ""}${extrasText}</p>`;
     })
@@ -90,22 +90,22 @@ function renderPrintPage(data) {
   if (recipe.title_en) html += `<p style="font-size:12pt; color:#666; margin:-10px 0 16px; direction:ltr;">${recipe.title_en}</p>`;
 
   html += renderIngredientsBlock(recipeIngredients);
-  html += `<p class="p-method-label">طريقة التحضير / Method:</p>`;
+  html += `<p class="p-method-label">طريقة التحضير <span class="label-en">Method</span>:</p>`;
   html += renderStepsBlock(steps);
 
   subRecipes.forEach((sub) => {
     html += `<h2 class="p-sub-title">${sub.title}${sub.amount ? ` — ${sub.amount} ${sub.unit || ""}` : ""}</h2>`;
     html += renderIngredientsBlock(sub.ingredients);
-    html += `<p class="p-method-label">طريقة التحضير / Method:</p>`;
+    html += `<p class="p-method-label">طريقة التحضير <span class="label-en">Method</span>:</p>`;
     html += renderStepsBlock(sub.steps);
   });
 
   const noteParts = [];
   if (recipe.general_quality_notes) noteParts.push(recipe.general_quality_notes);
-  if (recipe.shelf_life_days) noteParts.push(`مدة الصلاحية: ${recipe.shelf_life_days} يوم`);
+  if (recipe.shelf_life_days) noteParts.push(`مدة الصلاحية<span class="label-en">Shelf life</span>: ${recipe.shelf_life_days} يوم`);
   noteParts.push(`تحفظ في الثلاجة عند ${recipe.fridge_temp || "—"} أو الفريزر عند ${recipe.freezer_temp || "—"} / Store refrigerated at ${recipe.fridge_temp || "—"} or frozen at ${recipe.freezer_temp || "—"}`);
 
-  html += `<p class="p-final-note"><b>ملاحظة / Note:</b> ${noteParts.join(" — ")}</p>`;
+  html += `<p class="p-final-note"><b>ملاحظة<span class="label-en">Note</span>:</b> ${noteParts.join(" — ")}</p>`;
 
   document.getElementById("print-sheet").innerHTML = html;
 }

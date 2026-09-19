@@ -24,10 +24,10 @@ function renderStats() {
   const missingCount = allDashRecipes.filter((r) => r.has_missing_data).length;
 
   document.getElementById("stats-row").innerHTML = `
-    <div class="stat-card"><div class="num">${total}</div><div class="label">إجمالي الوصفات<span class="label-en">Total</span></div></div>
-    <div class="stat-card"><div class="num">${finalCount}</div><div class="label">✅ منتجات نهائية<span class="label-en">Final Products</span></div></div>
-    <div class="stat-card"><div class="num">${subCount}</div><div class="label">🧩 وصفات فرعية<span class="label-en">Sub-recipes</span></div></div>
-    <div class="stat-card"><div class="num">${missingCount}</div><div class="label">⚠ بيانات ناقصة<span class="label-en">Missing data</span></div></div>
+    <div class="stat-card"><div class="icon-circle">📖</div><div><div class="num">${total}</div><div class="label">إجمالي الوصفات<span class="label-en">Total</span></div></div></div>
+    <div class="stat-card"><div class="icon-circle">✅</div><div><div class="num">${finalCount}</div><div class="label">منتجات نهائية<span class="label-en">Final Products</span></div></div></div>
+    <div class="stat-card"><div class="icon-circle">🧩</div><div><div class="num">${subCount}</div><div class="label">وصفات فرعية<span class="label-en">Sub-recipes</span></div></div></div>
+    <div class="stat-card"><div class="icon-circle">⚠️</div><div><div class="num">${missingCount}</div><div class="label">بيانات ناقصة<span class="label-en">Missing data</span></div></div></div>
   `;
 }
 
@@ -39,7 +39,7 @@ function renderDashTable() {
   if (activeDashFilter === "missing") list = list.filter((r) => r.has_missing_data);
 
   if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5">لا توجد وصفات في هذا القسم <span class="label-en">No recipes here</span></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5">لا توجد وصفات في هذا القسم</td></tr>`;
     return;
   }
 
@@ -48,12 +48,12 @@ function renderDashTable() {
       <tr>
         <td>${r.title}${r.title_en ? ` <span style="color:var(--ink-soft); font-size:0.82rem;">${r.title_en}</span>` : ""}</td>
         <td>${r.categories?.name || "—"}</td>
-        <td>${r.is_sub_recipe ? "🧩 وصفة فرعية / Sub" : "✅ منتج نهائي / Final"}</td>
-        <td>${r.has_missing_data ? '<span class="badge badge-warn">⚠ ناقصة / Missing</span>' : "—"}</td>
+        <td>${r.is_sub_recipe ? "🧩 وصفة فرعية" : "✅ منتج نهائي"}</td>
+        <td>${r.has_missing_data ? '<span class="badge badge-warn">⚠ ناقصة</span>' : "—"}</td>
         <td class="actions">
-          <a class="btn btn-secondary btn-sm" href="admin-recipe-form.html?id=${r.id}">تعديل كامل / Edit</a>
-          <button class="btn btn-secondary btn-sm" onclick="quickRenameRecipe('${r.id}','${(r.title || "").replace(/'/g, "\\'")}')">✏ الاسم / Rename</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">حذف / Delete</button>
+          <a class="btn btn-secondary btn-sm" href="admin-recipe-form.html?id=${r.id}">تعديل كامل<span class="label-en">Edit</span></a>
+          <button class="btn btn-secondary btn-sm" onclick="quickRenameRecipe('${r.id}','${(r.title || "").replace(/'/g, "\\'")}')">✏ الاسم<span class="label-en">Rename</span></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteRecipe('${r.id}')">حذف<span class="label-en">Delete</span></button>
         </td>
       </tr>`;
   }
@@ -106,8 +106,8 @@ async function loadCategories() {
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--line);">
         <span>${c.name} ${c.name_en ? `<span style="color:var(--ink-soft); font-size:0.85rem;">(${c.name_en})</span>` : ""}</span>
         <span style="display:flex; gap:6px;">
-          <button class="btn btn-secondary btn-sm" onclick="editCategory('${c.id}','${(c.name || "").replace(/'/g, "\\'")}')">تعديل / Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}')">حذف / Delete</button>
+          <button class="btn btn-secondary btn-sm" onclick="editCategory('${c.id}','${(c.name || "").replace(/'/g, "\\'")}')">تعديل</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}')">حذف<span class="label-en">Delete</span></button>
         </span>
       </div>`
     )
