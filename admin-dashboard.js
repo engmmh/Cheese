@@ -5,6 +5,16 @@
 let allDashRecipes = [];
 let activeDashFilter = "all";
 
+function setDashFilter(filter) {
+  activeDashFilter = filter;
+  document.querySelectorAll(".dash-tab").forEach((t) => {
+    t.classList.toggle("active", t.dataset.filter === filter);
+  });
+  renderDashTable();
+  const table = document.querySelector(".admin-table");
+  if (table) table.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 async function loadDashboard() {
   const { data: recipes } = await supabaseClient
     .from("recipes")
@@ -24,10 +34,10 @@ function renderStats() {
   const missingCount = allDashRecipes.filter((r) => r.has_missing_data).length;
 
   document.getElementById("stats-row").innerHTML = `
-    <div class="stat-card"><div class="icon-circle">📖</div><div><div class="num">${total}</div><div class="label">إجمالي الوصفات<span class="label-en">Total</span></div></div></div>
-    <div class="stat-card"><div class="icon-circle">✅</div><div><div class="num">${finalCount}</div><div class="label">منتجات نهائية<span class="label-en">Final Products</span></div></div></div>
-    <div class="stat-card"><div class="icon-circle">🧩</div><div><div class="num">${subCount}</div><div class="label">وصفات فرعية<span class="label-en">Sub-recipes</span></div></div></div>
-    <div class="stat-card"><div class="icon-circle">⚠️</div><div><div class="num">${missingCount}</div><div class="label">بيانات ناقصة<span class="label-en">Missing data</span></div></div></div>
+    <div class="stat-card" onclick="setDashFilter('all')"><div class="icon-circle">📖</div><div><div class="num">${total}</div><div class="label">إجمالي الوصفات<span class="label-en">Total</span></div></div></div>
+    <div class="stat-card" onclick="setDashFilter('final')"><div class="icon-circle">✅</div><div><div class="num">${finalCount}</div><div class="label">منتجات نهائية<span class="label-en">Final Products</span></div></div></div>
+    <div class="stat-card" onclick="setDashFilter('sub')"><div class="icon-circle">🧩</div><div><div class="num">${subCount}</div><div class="label">وصفات فرعية<span class="label-en">Sub-recipes</span></div></div></div>
+    <div class="stat-card stat-warn" onclick="setDashFilter('missing')"><div class="icon-circle">⚠️</div><div><div class="num">${missingCount}</div><div class="label">يحتاج مراجعة<span class="label-en">Needs Review</span></div></div></div>
   `;
 }
 
@@ -150,11 +160,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("user-email").textContent = session.user.email;
   loadDashboard();
   document.querySelectorAll(".dash-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      activeDashFilter = tab.dataset.filter;
-      document.querySelectorAll(".dash-tab").forEach((t) => t.classList.remove("active"));
-      tab.classList.add("active");
-      renderDashTable();
-    });
+    tab.addEventListener("click", () => setDashFilter(tab.dataset.filter));
   });
 });

@@ -5,47 +5,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #FAF3E4;
+  --bg: #F7F5F1;
   --surface: #FFFFFF;
-  --ink: #2B1B14;
-  --ink-soft: #7A6A5C;
-  --accent: #A3273D;
-  --accent-dark: #7E1E30;
-  --accent-soft: #F3E0E3;
-  --caramel: #C98A2C;
-  --line: #EAE0CF;
-  --success-bg: #EFF3E4;
-  --success-ink: #4C6B2F;
-  --warn-bg: #FBEBD8;
-  --warn-ink: #8A5A15;
+  --ink: #1E1B18;
+  --ink-soft: #6F6B66;
+  --accent: #C41E3A;
+  --accent-dark: #96162C;
+  --accent-soft: #FBE4E8;
+  --caramel: #D69A2D;
+  --line: #E8E4DD;
+  --success-bg: #E7F2E1;
+  --success-ink: #3D6B2C;
+  --warn-bg: #FDF1DD;
+  --warn-ink: #97640D;
 
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Inter', -apple-system, sans-serif;
 
   --radius-s: 8px;
   --radius-m: 16px;
-  --shadow-card: 0 2px 10px rgba(43, 27, 20, 0.05);
-  --shadow-card-hover: 0 8px 24px rgba(43, 27, 20, 0.09);
+  --shadow-card: 0 2px 10px rgba(20, 16, 12, 0.06);
+  --shadow-card-hover: 0 10px 28px rgba(20, 16, 12, 0.11);
 
   --sp-1: 6px; --sp-2: 10px; --sp-3: 16px; --sp-4: 24px; --sp-5: 36px; --sp-6: 56px;
+  --header-bg: #1A1714;
 }
 
 :root[data-theme="dark"] {
-  --bg: #1C1512;
-  --surface: #251C18;
-  --ink: #F2E9DD;
-  --ink-soft: #B0A091;
-  --accent: #E0566F;
-  --accent-dark: #F3899C;
-  --accent-soft: #3A2229;
-  --caramel: #E0A857;
-  --line: #392E27;
-  --success-bg: #22301C;
-  --success-ink: #A8CC8A;
-  --warn-bg: #3A2E17;
-  --warn-ink: #E8B96A;
-  --shadow-card: 0 2px 10px rgba(0,0,0,0.25);
-  --shadow-card-hover: 0 10px 28px rgba(0,0,0,0.35);
+  --bg: #121212;
+  --surface: #1C1C1E;
+  --ink: #F2F0ED;
+  --ink-soft: #A3A09B;
+  --accent: #FF5C72;
+  --accent-dark: #FF8595;
+  --accent-soft: #3D2126;
+  --caramel: #F0B84B;
+  --line: #2E2E30;
+  --success-bg: #1E2A18;
+  --success-ink: #9BCB7F;
+  --warn-bg: #2E2410;
+  --warn-ink: #F0C066;
+  --shadow-card: 0 2px 14px rgba(0,0,0,0.4);
+  --shadow-card-hover: 0 12px 32px rgba(0,0,0,0.55);
+  --header-bg: #000000;
 }
 
 * { box-sizing: border-box; }
@@ -127,7 +129,7 @@ h1 .label-en::before, .hero h1 .label-en::before,
 
 /* ---------- Header ---------- */
 .site-header {
-  background: var(--ink);
+  background: var(--header-bg);
   color: #F5EDE1;
   padding: 18px 0;
   position: relative;
@@ -180,7 +182,7 @@ h1 .label-en::before, .hero h1 .label-en::before,
   font-size: 0.88rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; transition: all 0.15s;
 }
 .type-btn:hover { border-color: var(--accent); }
-.type-btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.type-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .categories-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding-bottom: var(--sp-1); }
 .chip {
@@ -309,7 +311,7 @@ h1 .label-en::before, .hero h1 .label-en::before,
 .scale-control input { border: none; padding: 2px; text-align: center; background: transparent; width: 50px; }
 
 .kitchen-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 999; overflow-y: auto; }
-.kitchen-header { position: sticky; top: 0; background: var(--ink); color: #F5EDE1; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-display); font-size: 1.2rem; }
+.kitchen-header { position: sticky; top: 0; background: var(--header-bg); color: #F5EDE1; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-display); font-size: 1.2rem; }
 .kitchen-header button { background: var(--accent); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; }
 .kitchen-steps { max-width: 720px; margin: 0 auto; padding: var(--sp-5) 20px 100px; }
 .kitchen-step { background: var(--surface); border-radius: var(--radius-m); box-shadow: var(--shadow-card); padding: 26px 30px; margin-bottom: 20px; font-size: 1.2rem; line-height: 1.7; }
@@ -362,8 +364,11 @@ textarea { resize: vertical; min-height: 76px; }
 
 /* ---------- Admin dashboard ---------- */
 .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: var(--sp-4); }
-.stat-card { background: var(--surface); border-radius: var(--radius-m); box-shadow: var(--shadow-card); padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: box-shadow 0.2s; }
-.stat-card:hover { box-shadow: var(--shadow-card-hover); }
+.stat-card { background: var(--surface); border-radius: var(--radius-m); box-shadow: var(--shadow-card); padding: 16px 18px; display: flex; align-items: center; gap: 14px; transition: box-shadow 0.2s, transform 0.15s; cursor: pointer; border: 2px solid transparent; }
+.stat-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+.stat-card.stat-warn { border-color: var(--warn-ink); }
+.stat-card.stat-warn .icon-circle { background: var(--warn-bg); }
+.stat-card.stat-warn .num { color: var(--warn-ink); }
 .stat-card .icon-circle { width: 42px; height: 42px; border-radius: 50%; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
 .stat-card .num { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: var(--accent); line-height: 1; }
 .stat-card .label { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; }
@@ -371,7 +376,7 @@ textarea { resize: vertical; min-height: 76px; }
 .dash-filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .dash-tab { padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font-size: 0.84rem; font-weight: 600; color: var(--ink-soft); cursor: pointer; }
 .dash-tab:hover { border-color: var(--accent); }
-.dash-tab.active { background: var(--ink); border-color: var(--ink); color: #fff; }
+.dash-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .admin-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--radius-m); overflow: hidden; box-shadow: var(--shadow-card); }
 .admin-table th, .admin-table td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--line); font-size: 0.87rem; }
