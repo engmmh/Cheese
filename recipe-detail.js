@@ -4,17 +4,30 @@
 
 // صور احتياطية بدون حقوق ملكية (Unsplash License) لحد ما تُرفع صورة حقيقية
 const FALLBACK_IMAGES = {
-  cheese: "https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=900&q=80&fm=jpg&fit=crop",
-  cream: "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=900&q=80&fm=jpg&fit=crop",
-  cookie: "https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=900&q=80&fm=jpg&fit=crop",
-  default: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=900&q=80&fm=jpg&fit=crop",
+  cheese: ["https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=900&q=80&fm=jpg&fit=crop"],
+  cream: ["https://images.unsplash.com/photo-1698688334089-c68105801d02?w=900&q=80&fm=jpg&fit=crop"],
+  cookie: ["https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=900&q=80&fm=jpg&fit=crop"],
+  chocolate: ["https://images.unsplash.com/photo-1636743715220-d8f8dd900b87?w=900&q=80&fm=jpg&fit=crop"],
+  default: [
+    "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=900&q=80&fm=jpg&fit=crop",
+    "https://images.unsplash.com/photo-1636743715220-d8f8dd900b87?w=900&q=80&fm=jpg&fit=crop",
+    "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=900&q=80&fm=jpg&fit=crop",
+  ],
 };
+function hashStr(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
 function pickFallbackImage(recipe) {
   const text = ((recipe.title_en || "") + " " + (recipe.title || "")).toLowerCase();
-  if (text.includes("cheese") || text.includes("جبن")) return FALLBACK_IMAGES.cheese;
-  if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) return FALLBACK_IMAGES.cream;
-  if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) return FALLBACK_IMAGES.cookie;
-  return FALLBACK_IMAGES.default;
+  let pool = FALLBACK_IMAGES.default;
+  if (text.includes("cheese") || text.includes("جبن")) pool = FALLBACK_IMAGES.cheese;
+  else if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) pool = FALLBACK_IMAGES.cream;
+  else if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) pool = FALLBACK_IMAGES.cookie;
+  else if (text.includes("chocolate") || text.includes("شوكولاتة") || text.includes("براوني") || text.includes("brownie")) pool = FALLBACK_IMAGES.chocolate;
+  const idx = hashStr(recipe.id || recipe.title || "") % pool.length;
+  return pool[idx];
 }
 
 function getRecipeIdFromUrl() {
@@ -83,6 +96,21 @@ let currentRecipeIngredients = [];
 let currentRecipeSteps = [];
 
 function renderRecipeDetail(data) {
+  const { recipe } = data;
+  if (recipe.has_missing_data) {
+    document.getElementById("detail-content").innerHTML = `
+      <div class="container" style="padding:80px 24px; text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:16px;">🛠️</div>
+        <h1 style="font-family:var(--font-display); font-size:1.6rem; margin-bottom:10px;">لسه بنستكمل بيانات الوصفة دي</h1>
+        <p style="color:var(--ink-soft); max-width:420px; margin:0 auto;">هتظهر هنا بمجرد اكتمال كل التفاصيل. تقدر تشوف باقي الوصفات المتاحة من الرئيسية.</p>
+        <a href="index.html" class="btn btn-primary" style="margin-top:24px;">الرجوع للرئيسية</a>
+      </div>`;
+    return;
+  }
+  renderRecipeDetailFull(data);
+}
+
+function renderRecipeDetailFull(data) {
   const { recipe, category, recipeIngredients, steps, components, usedInParents, mayContain, containsAllergens } = data;
   currentRecipeIngredients = recipeIngredients;
   currentRecipeSteps = steps;

@@ -1,17 +1,9 @@
-// Service Worker بسيط لتفعيل خاصية "تثبيت كتطبيق"
-const CACHE_NAME = "recipe-book-v1";
+// Service Worker بسيط — بدون أي تخزين مؤقت حاليًا (الموقع لسه بيتطوّر بنشاط)
+// بمجرد ما التصميم يستقر، تقدر تفعّل التخزين المؤقت هنا لتحسين سرعة التحميل
 
-self.addEventListener("install", (event) => {
-  self.skipWaiting();
-});
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", () => self.clients.claim());
 
-self.addEventListener("activate", (event) => {
-  self.clients.claim();
-});
-
-// استراتيجية: الشبكة أولًا، وإن فشلت يرجع لآخر نسخة محفوظة (لو موجودة)
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
+  event.respondWith(fetch(event.request, { cache: "no-store" }));
 });

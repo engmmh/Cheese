@@ -5,16 +5,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #F7F5F1;
+  --bg: #F6F8FA;
   --surface: #FFFFFF;
-  --ink: #1E1B18;
-  --ink-soft: #6F6B66;
-  --accent: #C41E3A;
-  --accent-dark: #96162C;
-  --accent-soft: #FBE4E8;
-  --caramel: #D69A2D;
-  --line: #E8E4DD;
-  --success-bg: #E7F2E1;
+  --ink: #16233A;
+  --ink-soft: #64748B;
+  --accent: #2A9D93;
+  --accent-dark: #1F7A72;
+  --accent-soft: #E1F3F1;
+  --caramel: #4A7FB5;
+  --line: #E4E9F0;
+  --success-bg: #E5F3E2;
   --success-ink: #3D6B2C;
   --warn-bg: #FDF1DD;
   --warn-ink: #97640D;
@@ -24,30 +24,30 @@
 
   --radius-s: 8px;
   --radius-m: 16px;
-  --shadow-card: 0 2px 10px rgba(20, 16, 12, 0.06);
-  --shadow-card-hover: 0 10px 28px rgba(20, 16, 12, 0.11);
+  --shadow-card: 0 2px 10px rgba(22, 35, 58, 0.06);
+  --shadow-card-hover: 0 10px 28px rgba(22, 35, 58, 0.1);
 
   --sp-1: 6px; --sp-2: 10px; --sp-3: 16px; --sp-4: 24px; --sp-5: 36px; --sp-6: 56px;
-  --header-bg: #1A1714;
+  --header-bg: #0F1C2E;
 }
 
 :root[data-theme="dark"] {
-  --bg: #121212;
-  --surface: #1C1C1E;
-  --ink: #F2F0ED;
-  --ink-soft: #A3A09B;
-  --accent: #FF5C72;
-  --accent-dark: #FF8595;
-  --accent-soft: #3D2126;
-  --caramel: #F0B84B;
-  --line: #2E2E30;
-  --success-bg: #1E2A18;
-  --success-ink: #9BCB7F;
+  --bg: #0B1220;
+  --surface: #131C2E;
+  --ink: #E8ECF3;
+  --ink-soft: #8B95A8;
+  --accent: #45C4B8;
+  --accent-dark: #6FDACE;
+  --accent-soft: #16302D;
+  --caramel: #6FA0D6;
+  --line: #223049;
+  --success-bg: #17251A;
+  --success-ink: #8FCB7A;
   --warn-bg: #2E2410;
   --warn-ink: #F0C066;
   --shadow-card: 0 2px 14px rgba(0,0,0,0.4);
   --shadow-card-hover: 0 12px 32px rgba(0,0,0,0.55);
-  --header-bg: #000000;
+  --header-bg: #05090F;
 }
 
 * { box-sizing: border-box; }

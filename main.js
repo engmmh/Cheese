@@ -11,18 +11,33 @@ let excludedAllergens = new Set();
 
 // صور احتياطية بدون حقوق ملكية (Unsplash License — استخدام تجاري حر) تُستخدم لحد ما ترفع صورة حقيقية
 const FALLBACK_IMAGES = {
-  cheese: "https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=500&q=75&fm=jpg&fit=crop",
-  cream: "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=500&q=75&fm=jpg&fit=crop",
-  cookie: "https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=500&q=75&fm=jpg&fit=crop",
-  default: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=500&q=75&fm=jpg&fit=crop",
+  cheese: ["https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=500&q=75&fm=jpg&fit=crop"],
+  cream: ["https://images.unsplash.com/photo-1698688334089-c68105801d02?w=500&q=75&fm=jpg&fit=crop"],
+  cookie: ["https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=500&q=75&fm=jpg&fit=crop"],
+  chocolate: ["https://images.unsplash.com/photo-1636743715220-d8f8dd900b87?w=500&q=75&fm=jpg&fit=crop"],
+  default: [
+    "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=500&q=75&fm=jpg&fit=crop",
+    "https://images.unsplash.com/photo-1636743715220-d8f8dd900b87?w=500&q=75&fm=jpg&fit=crop",
+    "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=500&q=75&fm=jpg&fit=crop",
+  ],
 };
+
+function hashStr(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
 
 function pickFallbackImage(recipe) {
   const text = ((recipe.title_en || "") + " " + (recipe.title || "")).toLowerCase();
-  if (text.includes("cheese") || text.includes("جبن")) return FALLBACK_IMAGES.cheese;
-  if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) return FALLBACK_IMAGES.cream;
-  if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) return FALLBACK_IMAGES.cookie;
-  return FALLBACK_IMAGES.default;
+  let pool = FALLBACK_IMAGES.default;
+  if (text.includes("cheese") || text.includes("جبن")) pool = FALLBACK_IMAGES.cheese;
+  else if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) pool = FALLBACK_IMAGES.cream;
+  else if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) pool = FALLBACK_IMAGES.cookie;
+  else if (text.includes("chocolate") || text.includes("شوكولاتة") || text.includes("براوني") || text.includes("brownie")) pool = FALLBACK_IMAGES.chocolate;
+  // نختار صورة مختلفة من نفس المجموعة حسب اسم الوصفة، عشان الكروت المتجاورة ما تتكررش
+  const idx = hashStr(recipe.id || recipe.title || "") % pool.length;
+  return pool[idx];
 }
 
 async function loadHomeData() {
@@ -53,7 +68,7 @@ async function loadHomeData() {
 }
 
 async function renderFeatured() {
-  const featured = allRecipes.filter((r) => r.is_featured);
+  const featured = allRecipes.filter((r) => r.is_featured && !r.has_missing_data);
   if (featured.length === 0) return;
   document.getElementById("featured-section").style.display = "block";
   document.getElementById("featured-grid").innerHTML = featured.map(cardHtmlGlobal).join("");
@@ -132,7 +147,7 @@ function renderRecipes() {
   const grid = document.getElementById("recipe-grid");
   const searchTerm = (document.getElementById("search-input").value || "").trim().toLowerCase();
 
-  let list = allRecipes;
+  let list = allRecipes.filter((r) => !r.has_missing_data);
   if (activeType === "final") list = list.filter((r) => !r.is_sub_recipe);
   if (activeType === "sub") list = list.filter((r) => r.is_sub_recipe);
   if (activeCategoryId) list = list.filter((r) => r.category_id === activeCategoryId);
