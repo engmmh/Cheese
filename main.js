@@ -9,6 +9,22 @@ let activeType = "all";
 let recipeAllergenMap = {}; // recipe_id -> Set(allergen_id)
 let excludedAllergens = new Set();
 
+// صور احتياطية بدون حقوق ملكية (Unsplash License — استخدام تجاري حر) تُستخدم لحد ما ترفع صورة حقيقية
+const FALLBACK_IMAGES = {
+  cheese: "https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=500&q=75&fm=jpg&fit=crop",
+  cream: "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=500&q=75&fm=jpg&fit=crop",
+  cookie: "https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=500&q=75&fm=jpg&fit=crop",
+  default: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=500&q=75&fm=jpg&fit=crop",
+};
+
+function pickFallbackImage(recipe) {
+  const text = ((recipe.title_en || "") + " " + (recipe.title || "")).toLowerCase();
+  if (text.includes("cheese") || text.includes("جبن")) return FALLBACK_IMAGES.cheese;
+  if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) return FALLBACK_IMAGES.cream;
+  if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) return FALLBACK_IMAGES.cookie;
+  return FALLBACK_IMAGES.default;
+}
+
 async function loadHomeData() {
   const { data: categories, error: catErr } = await supabaseClient
     .from("categories")
@@ -45,10 +61,7 @@ async function renderFeatured() {
 
 function cardHtmlGlobal(r) {
   const cat = allCategories.find((c) => c.id === r.category_id);
-  const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
-  const thumb = r.cover_image_url
-    ? `<img src="${r.cover_image_url}" alt="${r.title}">`
-    : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
+  const thumb = `<img src="${r.cover_image_url || pickFallbackImage(r)}" alt="${r.title}" loading="lazy">`;
   const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة<span class="label-en">Missing data</span></span>` : "";
   return `
     <a class="recipe-card" href="recipe.html?id=${r.id}">
@@ -145,10 +158,7 @@ function renderRecipes() {
 
   function cardHtml(r) {
     const cat = allCategories.find((c) => c.id === r.category_id);
-    const fallbackIcon = cat && cat.name && cat.name.includes("جبن") ? "🧀" : "🍰";
-    const thumb = r.cover_image_url
-      ? `<img src="${r.cover_image_url}" alt="${r.title}">`
-      : `<span style="font-size:2.4rem; opacity:0.5;">${fallbackIcon}</span>`;
+    const thumb = `<img src="${r.cover_image_url || pickFallbackImage(r)}" alt="${r.title}" loading="lazy">`;
     const missingBadge = r.has_missing_data ? `<span class="badge badge-warn">⚠ بيانات ناقصة<span class="label-en">Missing data</span></span>` : "";
     return `
       <a class="recipe-card" href="recipe.html?id=${r.id}">

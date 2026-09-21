@@ -2,6 +2,21 @@
 // منطق صفحة تفاصيل الوصفة
 // ============================================
 
+// صور احتياطية بدون حقوق ملكية (Unsplash License) لحد ما تُرفع صورة حقيقية
+const FALLBACK_IMAGES = {
+  cheese: "https://images.unsplash.com/photo-1754711596655-04ad921bd050?w=900&q=80&fm=jpg&fit=crop",
+  cream: "https://images.unsplash.com/photo-1698688334089-c68105801d02?w=900&q=80&fm=jpg&fit=crop",
+  cookie: "https://images.unsplash.com/photo-1697961533207-2c15cffdb4f1?w=900&q=80&fm=jpg&fit=crop",
+  default: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?w=900&q=80&fm=jpg&fit=crop",
+};
+function pickFallbackImage(recipe) {
+  const text = ((recipe.title_en || "") + " " + (recipe.title || "")).toLowerCase();
+  if (text.includes("cheese") || text.includes("جبن")) return FALLBACK_IMAGES.cheese;
+  if (text.includes("tiramisu") || text.includes("cream") || text.includes("تيراميسو") || text.includes("كريمة")) return FALLBACK_IMAGES.cream;
+  if (text.includes("cookie") || text.includes("كوكيز") || text.includes("بسكويت")) return FALLBACK_IMAGES.cookie;
+  return FALLBACK_IMAGES.default;
+}
+
 function getRecipeIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
@@ -77,9 +92,8 @@ function renderRecipeDetail(data) {
     <a href="index.html">الرئيسية</a> ›
     ${category ? `<a href="index.html?cat=${category.id}">${category.name}</a> › ` : ""}
     ${recipe.title}`;
-  document.getElementById("cover-image-wrap").innerHTML = recipe.cover_image_url
-    ? `<img class="cover-image" src="${recipe.cover_image_url}" alt="${recipe.title}">`
-    : "";
+  document.getElementById("cover-image-wrap").innerHTML =
+    `<img class="cover-image" src="${recipe.cover_image_url || pickFallbackImage(recipe)}" alt="${recipe.title}" loading="lazy">`;
   document.getElementById("recipe-title").innerHTML = recipe.title + (recipe.title_en ? `<span class="title-en-hero">${recipe.title_en}</span>` : "");
   document.getElementById("recipe-desc").textContent = recipe.short_description || "";
   document.getElementById("type-badge").innerHTML = recipe.is_sub_recipe
@@ -88,12 +102,12 @@ function renderRecipeDetail(data) {
 
   const infoStrip = document.getElementById("info-strip");
   const infoItems = [];
-  if (recipe.servings) infoItems.push(["الكمية الناتجة<span class="label-en">Yield</span>", recipe.servings]);
-  if (recipe.total_time) infoItems.push(["وقت التحضير<span class="label-en">Time</span>", recipe.total_time]);
-  if (recipe.shelf_life_days) infoItems.push(["مدة الصلاحية<span class="label-en">Shelf life</span>", `${recipe.shelf_life_days} يوم / days`]);
-  infoItems.push(["حرارة الثلاجة<span class="label-en">Fridge</span>", recipe.fridge_temp || "—"]);
-  infoItems.push(["حرارة الفريزر<span class="label-en">Freezer</span>", recipe.freezer_temp || "—"]);
-  if (recipe.cutting_size) infoItems.push(["مقاس التقطيع<span class="label-en">Cut size</span>", recipe.cutting_size]);
+  if (recipe.servings) infoItems.push(['الكمية الناتجة<span class="label-en">Yield</span>', recipe.servings]);
+  if (recipe.total_time) infoItems.push(['وقت التحضير<span class="label-en">Time</span>', recipe.total_time]);
+  if (recipe.shelf_life_days) infoItems.push(['مدة الصلاحية<span class="label-en">Shelf life</span>', `${recipe.shelf_life_days} يوم`]);
+  infoItems.push(['حرارة الثلاجة<span class="label-en">Fridge</span>', recipe.fridge_temp || '—']);
+  infoItems.push(['حرارة الفريزر<span class="label-en">Freezer</span>', recipe.freezer_temp || '—']);
+  if (recipe.cutting_size) infoItems.push(['مقاس التقطيع<span class="label-en">Cut size</span>', recipe.cutting_size]);
   infoStrip.innerHTML = infoItems
     .map(([label, value]) => `<div class="info-item"><span class="label">${label}</span><span class="value">${value}</span></div>`)
     .join("");
